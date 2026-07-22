@@ -58,7 +58,8 @@ export default function Navbar() {
 
         {/* CTA button */}
         <div className="flex gap-4">
-        <Link href={'/admin'}> <p className="hidden md:inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary-dark transition-colors">Admin</p></Link>
+        <Link href={'/login'}>
+        <p className="hidden md:inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary-dark transition-colors">Admin</p></Link>
         <a
           href="/DanishCV.pdf" target="_blank" rel="noopener noreferrer"
           className="hidden md:inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary-dark transition-colors"

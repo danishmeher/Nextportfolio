@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
 import "./globals.css";
+import { AuthProvider } from "@/lib/auth-context";
 
 export const metadata: Metadata = {
   title: "Danish | Frontend Developer Portfolio",
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  return (
+  return (<AuthProvider>
     <html lang="en" className="scroll-smooth">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -40,6 +41,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="bg-white text-slate-800 antialiased">{children}
         <Toaster richColors position="top-right" />
       </body>
-    </html>
+    </html></AuthProvider>
   );
 }
