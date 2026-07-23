@@ -2,9 +2,9 @@
 
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Mail, MapPin, Send, CheckCircle , PhoneCall } from "lucide-react";
+import { Mail, MapPin, Send, CheckCircle, PhoneCall } from "lucide-react";
 import SectionDivider from "./SectionDivider";
-import { toast} from "sonner";
+import { toast } from "sonner";
 
 const slideUp = {
   hidden: { opacity: 0, y: 60 },
@@ -82,7 +82,7 @@ export default function Contact() {
       setSubmitted(true);
       console.log(data.message)
       toast.success(data.message || "Message sent successfully!")
-      
+
 
       setFormData({
         name: "",
@@ -95,7 +95,7 @@ export default function Contact() {
     } catch (error) {
       console.error(error);
       toast.error("Failed to send message. Please try again.");
-      
+
     } finally {
       setLoading(false);
     }
@@ -160,8 +160,8 @@ export default function Contact() {
                 </div>
               </div>
             </motion.div>
-            
-             <motion.div variants={slideFromLeft}>
+
+            <motion.div variants={slideFromLeft}>
               <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-white p-5 transition-all duration-300 hover:shadow-md">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-primary">
                   <PhoneCall size={22} />
@@ -183,12 +183,12 @@ export default function Contact() {
                 <div>
                   <h3 className="font-semibold text-slate-900">Location</h3>
                   <p className="mt-0.5 text-sm text-slate-500">
-                    Available Remotely
+                    Available Hybrid
                   </p>
                 </div>
               </div>
             </motion.div>
-           
+
 
             <motion.div variants={slideFromLeft}>
               <div className="rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 p-6 text-white">
@@ -278,11 +278,10 @@ export default function Contact() {
               <motion.button
                 type="submit"
                 disabled={submitted || loading}
-                className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-base font-semibold text-white transition-all duration-300 ${
-                  submitted
+                className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-base font-semibold text-white transition-all duration-300 ${submitted
                     ? "bg-emerald-500"
                     : "bg-primary shadow-lg shadow-primary/25 hover:bg-primary-dark hover:shadow-xl hover:shadow-primary/30"
-                } ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+                  } ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
                 whileHover={!submitted && !loading ? { y: -2 } : {}}
                 whileTap={!submitted && !loading ? { scale: 0.98 } : {}}
               >

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import {
@@ -140,10 +141,12 @@ function ProjectCard({
           className={`relative flex h-36 items-center justify-center overflow-hidden bg-gradient-to-br ${project.color}`}
         >
           {project.imageUrl ? (
-            <img
+            <Image
               src={project.imageUrl}
               alt={project.title}
-              className="h-full w-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover"
             />
           ) : (
             <motion.span
@@ -211,10 +214,12 @@ function ProjectCard({
       <div className="mb-3 flex items-center gap-3">
         <div className="relative h-12 w-12 overflow-hidden rounded-xl bg-slate-100">
           {project.imageUrl ? (
-            <img
+            <Image
               src={project.imageUrl}
               alt={project.title}
-              className="h-full w-full object-cover"
+              fill
+              sizes="48px"
+              className="object-cover"
             />
           ) : (
             <span className="flex h-full w-full items-center justify-center text-2xl">
