@@ -1,6 +1,13 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
-import { buildAssistantPrompt, findRelevantChunks, knowledgeChunks } from "@/lib/assistant";
+import {
+  buildAssistantPrompt,
+  findRelevantChunks,
+  getLiveProjectsContext,
+  getLiveSkillsContext,
+  getLiveExperienceContext,
+  knowledgeChunks,
+} from "@/lib/assistant";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY?.trim();
 const GEMINI_MODEL = (process.env.GEMINI_MODEL || "gemini-2.5-pro").trim();
@@ -55,7 +62,19 @@ export async function POST(req: Request) {
     }
 
     const relevantChunks = findRelevantChunks(question);
-    const prompt = buildAssistantPrompt(question, relevantChunks.length ? relevantChunks : knowledgeChunks);
+    
+    // Query all live data in parallel
+    const [projects, skills, experience] = await Promise.all([
+      getLiveProjectsContext(),
+      getLiveSkillsContext(),
+      getLiveExperienceContext(),
+    ]);
+
+    const prompt = buildAssistantPrompt(
+      question,
+      relevantChunks.length ? relevantChunks : knowledgeChunks,
+      { projects, skills, experience }
+    );
 
     const answer = await callGemini(prompt);
 
