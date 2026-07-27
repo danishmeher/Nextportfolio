@@ -204,30 +204,35 @@ export default function ChatAssistant() {
             </button>
           </div>
 
-          <div className="max-h-[340px] space-y-3 overflow-y-auto px-4 py-4 text-sm">
-            {messages.map((message, index) => (
-              <div
-                key={`${message.role}-${index}`}
-                className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
-              >
+          <div className="max-h-[340px] space-y-2 overflow-y-auto px-4 py-4 text-sm">
+            {messages.map((message, index) => {
+              if (message.role === "assistant" && message.text === "" && message.streaming) {
+                return null;
+              }
+              return (
                 <div
-                  className={`max-w-[85%] rounded-3xl px-4 py-3 text-slate-900 ${
-                    message.role === "assistant"
-                      ? "bg-slate-100"
-                      : "bg-primary text-white"
-                  }`}
+                  key={`${message.role}-${index}`}
+                  className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
                 >
-                  {message.role === "assistant" ? (
-                    <FormatMessageText text={message.text} />
-                  ) : (
-                    message.text
-                  )}
+                  <div
+                    className={`max-w-[85%] rounded-3xl px-4 py-3 text-slate-900 ${
+                      message.role === "assistant"
+                        ? "bg-slate-100"
+                        : "bg-primary text-white"
+                    }`}
+                  >
+                    {message.role === "assistant" ? (
+                      <FormatMessageText text={message.text} />
+                    ) : (
+                      message.text
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {loading && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] rounded-3xl bg-slate-100 px-4 py-3 text-slate-900">
+                <div className="max-w-[85%] rounded-3xl bg-slate-100 px-3 py-2 text-slate-900">
                   <TypingIndicator />
                 </div>
               </div>
