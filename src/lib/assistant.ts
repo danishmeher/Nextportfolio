@@ -1,5 +1,6 @@
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "./firebase";
+import { getPortfolioProfileContext } from "./site-content";
 
 export type KnowledgeChunk = {
   id: string;
@@ -12,37 +13,37 @@ export const knowledgeChunks: KnowledgeChunk[] = [
   {
     id: "about",
     title: "About Danish",
-    text: "Danish is a frontend developer focused on building clean digital experiences and frontend systems with React, Next.js, TypeScript, and Tailwind CSS.",
-    tags: ["frontend", "react", "next.js", "typescript", "tailwind", "portfolio"],
+    text: "Danish is a frontend developer focused on building polished digital experiences with React, Next.js, TypeScript, and Tailwind CSS.",
+    tags: ["frontend", "react", "next.js", "typescript", "tailwind", "portfolio", "developer"],
   },
   {
     id: "experience",
     title: "Current Role and Career Experience",
-    text: "He works as a Frontend Developer, building reusable UI components and web applications.",
-    tags: ["experience", "career", "work", "job", "company", "role", "7 Kings Code", "global study expertz"],
+    text: "He works as a Frontend Developer, building reusable UI components and web applications for modern products.",
+    tags: ["experience", "career", "work", "job", "company", "role", "7 kings code", "global study expertz"],
   },
   {
     id: "skills",
     title: "Skills",
-    text: "He has expertise in frontend, backend, tools, and modern frameworks.",
+    text: "He has expertise in frontend development, modern frameworks, UI engineering, and product-focused implementation.",
     tags: ["skills", "technologies", "stack", "react", "next.js", "typescript", "backend", "frontend", "tools", "tailwind"],
   },
   {
     id: "projects",
     title: "Projects",
-    text: "The portfolio highlights project examples and case studies.",
+    text: "The portfolio highlights featured projects, product work, and case studies.",
     tags: ["projects", "portfolio", "work examples", "case studies", "cws hygiene", "cws workwear", "sitecore"],
   },
   {
     id: "contact",
     title: "Contact",
-    text: "Visitors can contact Danish through the contact section on the portfolio or by using the email link. There is also a resume button available in the navigation bar.",
-    tags: ["contact", "email", "resume", "cv", "reach"],
+    text: "Visitors can contact Danish through the contact section on the portfolio, by email, by phone, or via the resume button in the navigation bar.",
+    tags: ["contact", "email", "phone", "number", "resume", "cv", "reach", "call"],
   },
   {
     id: "hobbies",
     title: "Hobbies and Interests",
-    text: "Outside of professional frontend engineering, Danish is passionate about sports and recreation. He loves playing and watching cricket, playing video games, and keeping up with various outdoor sports.",
+    text: "Outside of professional frontend engineering, Danish enjoys cricket, gaming, and outdoor sports.",
     tags: ["hobbies", "interests", "free time", "cricket", "games", "sports", "fun", "play", "gaming"],
   },
 ];
@@ -51,18 +52,18 @@ export async function getLiveProjectsContext(): Promise<string> {
   try {
     const q = query(collection(db, "projects"), orderBy("order", "asc"));
     const querySnapshot = await getDocs(q);
-    
+
     if (querySnapshot.empty) {
       return "No projects are currently listed.";
     }
-    
+
     const projectsList = querySnapshot.docs.map((doc) => {
       const data = doc.data();
       const companyStr = data.company ? ` at ${data.company}` : "";
       const tagsStr = Array.isArray(data.tags) && data.tags.length > 0 ? ` (Built using: ${data.tags.join(", ")})` : "";
       return `- ${data.title}${companyStr}: ${data.description}${tagsStr}`;
     });
-    
+
     return projectsList.join("\n");
   } catch (error) {
     console.error("Failed to fetch live projects from Firestore:", error);
@@ -74,12 +75,11 @@ export async function getLiveSkillsContext(): Promise<string> {
   try {
     const q = query(collection(db, "skills"));
     const querySnapshot = await getDocs(q);
-    
+
     if (querySnapshot.empty) {
       return "No skills are currently listed.";
     }
-    
-    // Group skills by category
+
     const skillsByCategory: Record<string, string[]> = {};
     querySnapshot.docs.forEach((doc) => {
       const data = doc.data();
@@ -89,7 +89,7 @@ export async function getLiveSkillsContext(): Promise<string> {
       }
       skillsByCategory[cat].push(data.name);
     });
-    
+
     return Object.entries(skillsByCategory)
       .map(([cat, list]) => `- ${cat.charAt(0).toUpperCase() + cat.slice(1)} Skills: ${list.join(", ")}`)
       .join("\n");
@@ -103,22 +103,31 @@ export async function getLiveExperienceContext(): Promise<string> {
   try {
     const q = query(collection(db, "experiences"), orderBy("order", "asc"));
     const querySnapshot = await getDocs(q);
-    
+
     if (querySnapshot.empty) {
       return "No career experience details are currently listed.";
     }
-    
+
     const expList = querySnapshot.docs.map((doc) => {
       const data = doc.data();
       const currentStr = data.current ? " (Current Role)" : "";
       const tagsStr = Array.isArray(data.tags) && data.tags.length > 0 ? ` (Keywords: ${data.tags.join(", ")})` : "";
       return `- ${data.role} at ${data.company} [${data.period}]${currentStr}: ${data.description}${tagsStr}`;
     });
-    
+
     return expList.join("\n");
   } catch (error) {
     console.error("Failed to fetch live experiences from Firestore:", error);
     return "- Frontend Developer at 7 Kings Code (Current Role): Building reusable UI components with React, integrating Sitecore XM Cloud.\n- Website Developer at Global Study Expertz: Developed responsive web applications using React.js, Next.js, TypeScript, and Tailwind CSS.";
+  }
+}
+
+export async function getLiveContactContext(): Promise<string> {
+  try {
+    return getPortfolioProfileContext();
+  } catch (error) {
+    console.error("Failed to build profile context:", error);
+    return "Name: Danish\nRole: Frontend Developer\nEmail: danish.daniriaz@gmail.com\nPhone: +92 302 4111148\nResume: /DanishCV.pdf";
   }
 }
 
@@ -141,10 +150,11 @@ export function findRelevantChunks(question: string) {
           (score, word) => score + (normalizedQuestion.includes(word.toLowerCase()) ? 0.25 : 0),
           0
         );
+      const contactBoost = chunk.id === "contact" && /(phone|number|call|contact|email|resume|cv|reach)/i.test(question) ? 3 : 0;
 
       return {
         chunk,
-        score: titleScore + textScore,
+        score: titleScore + textScore + contactBoost,
       };
     })
     .filter((item) => item.score > 0)
@@ -160,6 +170,7 @@ export function buildAssistantPrompt(
     projects?: string;
     skills?: string;
     experience?: string;
+    contact?: string;
   }
 ) {
   const retrievedText = chunks
@@ -173,15 +184,18 @@ export function buildAssistantPrompt(
       if (chunk.id === "experience" && liveContexts?.experience) {
         return `- ${chunk.title}:\n${liveContexts.experience}`;
       }
+      if (chunk.id === "contact" && liveContexts?.contact) {
+        return `- ${chunk.title}:\n${liveContexts.contact}`;
+      }
       return `- ${chunk.title}: ${chunk.text}`;
     })
     .join("\n");
 
-  return `You are a helpful assistant for Danish's portfolio. Use the portfolio details below to answer the user's question accurately, respectfully, and very concisely. Always keep your response short, straight to the point, and avoid long-winded explanations.
+  return `You are Danish's portfolio assistant. Speak like a friendly human, not a robot. Be warm, direct, and concise. Use the portfolio details below to answer the user's question accurately.
 
-If the question is out of context or unrelated to Danish, his professional background, skills, projects, experience, or hobbies (cricket, video games, sports), respond in a very professional, natural, and human-like manner. Keep the response very short (1 to 2 sentences max) explaining that you are Danish's personal portfolio assistant and can only help with questions about his career, projects, skills, or hobbies. Avoid using the exact same phrasing every time.
+If the user asks for contact details, give them plainly and naturally. If the question is unrelated, briefly say you can help with Danish's work, projects, skills, or how to reach him. Keep the reply short, easy to read, and conversational.
 
-When listing reasons, details, or steps, please format them as a clear list. Start each list item on a new line beginning with a bullet character '* '. Keep your response very concise, readable, and structured with appropriate spacing/newlines.
+Use bullet points when listing a few options, and keep the overall response brief.
 
 Portfolio details:
 ${retrievedText}

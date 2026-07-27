@@ -5,6 +5,7 @@ import { motion, useInView } from "framer-motion";
 import { Mail, MapPin, Send, CheckCircle, PhoneCall } from "lucide-react";
 import SectionDivider from "./SectionDivider";
 import { toast } from "sonner";
+import { portfolioProfile } from "@/lib/site-content";
 
 const slideUp = {
   hidden: { opacity: 0, y: 60 },
@@ -155,7 +156,7 @@ export default function Contact() {
                 <div>
                   <h3 className="font-semibold text-slate-900">Email</h3>
                   <p className="mt-0.5 text-sm text-slate-500">
-                    danish.daniriaz@gmail.com
+                    {portfolioProfile.email}
                   </p>
                 </div>
               </div>
@@ -169,7 +170,7 @@ export default function Contact() {
                 <div>
                   <h3 className="font-semibold text-slate-900">Phone Number</h3>
                   <p className="mt-0.5 text-sm text-slate-500">
-                    +92 302 4111148
+                    {portfolioProfile.phone}
                   </p>
                 </div>
               </div>
@@ -183,7 +184,7 @@ export default function Contact() {
                 <div>
                   <h3 className="font-semibold text-slate-900">Location</h3>
                   <p className="mt-0.5 text-sm text-slate-500">
-                    Available Hybrid
+                    {portfolioProfile.location}
                   </p>
                 </div>
               </div>
@@ -191,12 +192,11 @@ export default function Contact() {
 
 
             <motion.div variants={slideFromLeft}>
-              <div className="rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 p-6 text-white">
+              <div className="rounded-2xl bg-linear-to-br from-indigo-500 to-violet-600 p-6 text-white">
                 <h3 className="mb-2 text-lg font-bold">Quick Response</h3>
                 <p className="text-sm leading-relaxed text-indigo-100">
-                  I typically respond within 24 hours. For urgent projects,
-                  mention it in your message and I&apos;ll prioritize your
-                  request.
+                  {portfolioProfile.responseTime} For urgent projects, mention
+                  it in your message and I&apos;ll prioritize your request.
                 </p>
               </div>
             </motion.div>

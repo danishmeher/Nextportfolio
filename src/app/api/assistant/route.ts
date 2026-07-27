@@ -6,8 +6,10 @@ import {
   getLiveProjectsContext,
   getLiveSkillsContext,
   getLiveExperienceContext,
+  getLiveContactContext,
   knowledgeChunks,
 } from "@/lib/assistant";
+import { portfolioProfile } from "@/lib/site-content";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY?.trim();
 const GEMINI_MODEL = (process.env.GEMINI_MODEL || "gemini-2.5-pro").trim();
@@ -90,6 +92,36 @@ function containsInappropriate(text: string): boolean {
   return INAPPROPRIATE_PATTERNS.some((pattern) => pattern.test(text));
 }
 
+function buildLocalAnswer(question: string, contactContext?: string) {
+  const normalized = question.toLowerCase();
+
+  if (/(phone|number|call|contact|reach|email)/i.test(question)) {
+    const phoneMatch = contactContext?.match(/Phone:\s*(.+)/i);
+    const emailMatch = contactContext?.match(/Email:\s*(.+)/i);
+    const resumeMatch = contactContext?.match(/Resume:\s*(.+)/i);
+
+    const email = emailMatch?.[1] || portfolioProfile.email;
+    const phone = phoneMatch?.[1] || portfolioProfile.phone;
+    const resume = resumeMatch?.[1] || portfolioProfile.resumeUrl;
+
+    return `You can reach Danish through the contact section on the site, by email at ${email}, or by phone at ${phone}. His resume is also available here: ${resume}.`;
+  }
+
+  if (normalized.includes("resume") || normalized.includes("cv")) {
+    return `His resume is available from the navigation bar here: ${portfolioProfile.resumeUrl}.`;
+  }
+
+  if (normalized.includes("project") || normalized.includes("portfolio")) {
+    return `Danish has worked on a range of frontend and product-focused projects. I can point you to the featured work on his portfolio if you want.`;
+  }
+
+  if (normalized.includes("skill") || normalized.includes("stack") || normalized.includes("tech")) {
+    return `He works mainly with React, Next.js, TypeScript, and Tailwind CSS, with a strong focus on clean frontend experiences.`;
+  }
+
+  return `I can help with Danish's background, projects, skills, or how to get in touch. If you want, I can point you to the right section of the site.`;
+}
+
 export async function POST(req: Request) {
   try {
     const { question } = await req.json();
@@ -100,35 +132,41 @@ export async function POST(req: Request) {
 
     if (containsInappropriate(question)) {
       const responses = [
-        "(Shutuup)",
         "Please keep the conversation professional and respectful.",
-        "I'm here to answer questions about Danish's work and portfolio. Let's stay on topic.",
-        "That's inappropriate. Please ask about Danish's skills, experience, or projects instead.",
-        "I cannot answer that. Please keep your queries professional.",
-        "Let's focus on professional inquiries regarding Danish's career and development experience."
+        "I can help with Danish's work and portfolio. Let's keep it focused on that.",
+        "I’m here to answer questions about Danish's skills, experience, or projects.",
+        "Let’s stay on topic and keep things professional."
       ];
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];
       return NextResponse.json({ answer: randomResponse });
     }
 
     const relevantChunks = findRelevantChunks(question);
-    
-    // Query all live data in parallel
-    const [projects, skills, experience] = await Promise.all([
+
+    const [projects, skills, experience, contact] = await Promise.all([
       getLiveProjectsContext(),
       getLiveSkillsContext(),
       getLiveExperienceContext(),
+      getLiveContactContext(),
     ]);
 
     const prompt = buildAssistantPrompt(
       question,
       relevantChunks.length ? relevantChunks : knowledgeChunks,
-      { projects, skills, experience }
+      { projects, skills, experience, contact }
     );
 
-    const answer = await callGemini(prompt);
+    if (!GEMINI_API_KEY) {
+      return NextResponse.json({ answer: buildLocalAnswer(question, contact) });
+    }
 
-    return NextResponse.json({ answer });
+    try {
+      const answer = await callGemini(prompt);
+      return NextResponse.json({ answer });
+    } catch (error) {
+      console.warn("Gemini fallback triggered:", error);
+      return NextResponse.json({ answer: buildLocalAnswer(question, contact) });
+    }
   } catch (error) {
     console.error("Assistant API error:", error);
     const message =

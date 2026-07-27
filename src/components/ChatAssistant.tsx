@@ -6,11 +6,33 @@ import { MessageSquare, Send, X } from "lucide-react";
 type ChatMessage = {
   role: "assistant" | "user";
   text: string;
+  streaming?: boolean;
 };
 
+function TypingIndicator() {
+  const [dots, setDots] = useState(1);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setDots((current) => (current % 3) + 1);
+    }, 500);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="flex items-center gap-1.5" aria-label="Typing">
+      <span className="text-2xl text-slate-500">{'.'.repeat(dots)}</span>
+    </div>
+  );
+}
+
 function FormatMessageText({ text }: { text: string }) {
-  const lines = text.split("\n");
-  
+  const normalizedText = text
+    .replace(/^\s*\*\s+/gm, "• ")
+    .replace(/(?<!\*)\*(?!\*)/g, "");
+  const lines = normalizedText.split("\n");
+
   return (
     <div className="space-y-1.5 whitespace-pre-line text-sm leading-relaxed">
       {lines.map((line, idx) => {
@@ -56,7 +78,7 @@ export default function ChatAssistant() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      text: "Hello! I'm Danish's assistant. Ask me anything about his portfolio and frontend experience.",
+      text: "Hey! I can help with Danish's work, projects, skills, or how to get in touch.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -71,12 +93,55 @@ export default function ChatAssistant() {
     }
   }, [messages, loading, open]);
 
+  const streamAssistantReply = (answer: string, messageIndex: number) => {
+    const words = answer.trim().split(/\s+/).filter(Boolean);
+
+    if (words.length === 0) {
+      setMessages((current) =>
+        current.map((message, index) =>
+          index === messageIndex ? { ...message, text: answer, streaming: false } : message
+        )
+      );
+      setLoading(false);
+      return;
+    }
+
+    let step = 0;
+    const intervalId = window.setInterval(() => {
+      const nextText = words.slice(0, step + 1).join(" ");
+
+      setMessages((current) =>
+        current.map((message, index) =>
+          index === messageIndex ? { ...message, text: nextText, streaming: step < words.length - 1 } : message
+        )
+      );
+
+      step += 1;
+
+      if (step >= words.length) {
+        window.clearInterval(intervalId);
+        setLoading(false);
+        setMessages((current) =>
+          current.map((message, index) =>
+            index === messageIndex ? { ...message, streaming: false } : message
+          )
+        );
+      }
+    }, 40);
+  };
+
   const handleSend = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmed = input.trim();
     if (!trimmed) return;
 
-    setMessages((current) => [...current, { role: "user", text: trimmed }]);
+    let assistantIndex = 0;
+    setMessages((current) => {
+      const nextMessages = [...current, { role: "user" as const, text: trimmed }];
+      assistantIndex = nextMessages.length;
+      nextMessages.push({ role: "assistant" as const, text: "", streaming: true });
+      return nextMessages;
+    });
     setInput("");
     setLoading(true);
 
@@ -92,25 +157,31 @@ export default function ChatAssistant() {
       const data = await response.json();
       if (!response.ok) {
         const errorMessage = data?.error || "Assistant request failed.";
-        setMessages((current) => [
-          ...current,
-          { role: "assistant", text: errorMessage },
-        ]);
+        setMessages((current) =>
+          current.map((message, index) =>
+            index === assistantIndex ? { ...message, text: errorMessage, streaming: false } : message
+          )
+        );
+        setLoading(false);
         return;
       }
 
       const answer = data.answer || data.error || "Sorry, I couldn't generate a response right now.";
-      setMessages((current) => [...current, { role: "assistant", text: answer }]);
+      setLoading(false);
+      streamAssistantReply(answer, assistantIndex);
     } catch (error) {
       console.error("Assistant fetch error:", error);
-      setMessages((current) => [
-        ...current,
-        {
-          role: "assistant",
-          text: "There was an error contacting the assistant. Please try again later.",
-        },
-      ]);
-    } finally {
+      setMessages((current) =>
+        current.map((message, index) =>
+          index === assistantIndex
+            ? {
+                ...message,
+                text: "Sorry — I hit a snag there. Please try again in a moment.",
+                streaming: false,
+              }
+            : message
+        )
+      );
       setLoading(false);
     }
   };
@@ -157,7 +228,7 @@ export default function ChatAssistant() {
             {loading && (
               <div className="flex justify-start">
                 <div className="max-w-[85%] rounded-3xl bg-slate-100 px-4 py-3 text-slate-900">
-                  Typing...
+                  <TypingIndicator />
                 </div>
               </div>
             )}
