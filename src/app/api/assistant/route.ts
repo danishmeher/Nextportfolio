@@ -4,6 +4,7 @@ import {
   buildAssistantPrompt,
   findRelevantChunks,
   getLiveProjectsContext,
+  shortenAssistantReply,
   getLiveSkillsContext,
   getLiveExperienceContext,
   getLiveContactContext,
@@ -162,7 +163,7 @@ export async function POST(req: Request) {
 
     try {
       const answer = await callGemini(prompt);
-      return NextResponse.json({ answer });
+      return NextResponse.json({ answer: shortenAssistantReply(answer) });
     } catch (error) {
       console.warn("Gemini fallback triggered:", error);
       return NextResponse.json({ answer: buildLocalAnswer(question, contact) });

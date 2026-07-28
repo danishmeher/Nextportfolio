@@ -15,7 +15,7 @@ function TypingIndicator() {
   useEffect(() => {
     const interval = window.setInterval(() => {
       setDots((current) => (current % 3) + 1);
-    }, 500);
+    }, 400);
 
     return () => window.clearInterval(interval);
   }, []);
@@ -34,7 +34,7 @@ function FormatMessageText({ text }: { text: string }) {
   const lines = normalizedText.split("\n");
 
   return (
-    <div className="space-y-1.5 whitespace-pre-line text-sm leading-relaxed">
+    <div className="space-y-1.5 whitespace-pre-line wrap-break-word text-sm leading-relaxed">
       {lines.map((line, idx) => {
         let content: React.ReactNode = line;
         
@@ -63,12 +63,12 @@ function FormatMessageText({ text }: { text: string }) {
           return (
             <div key={idx} className="flex items-start gap-2 pl-2">
               <span className="text-primary shrink-0 mt-2 h-1.5 w-1.5 rounded-full bg-slate-400" />
-              <span>{lineContent}</span>
+              <span className="wrap-break-word">{lineContent}</span>
             </div>
           );
         }
 
-        return <p key={idx}>{content}</p>;
+        return <p key={idx} className="wrap-break-word">{content}</p>;
       })}
     </div>
   );
@@ -215,24 +215,26 @@ export default function ChatAssistant() {
                   className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-3xl px-4 py-3 text-slate-900 ${
+                    className={`max-w-[85%] overflow-hidden rounded-3xl px-4 py-3 text-slate-900 ${
                       message.role === "assistant"
                         ? "bg-slate-100"
                         : "bg-primary text-white"
                     }`}
                   >
+                    <div className="wrap-break-word">
                     {message.role === "assistant" ? (
                       <FormatMessageText text={message.text} />
                     ) : (
                       message.text
                     )}
+                    </div>
                   </div>
                 </div>
               );
             })}
             {loading && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] rounded-3xl bg-slate-100 px-3 py-2 text-slate-900">
+                <div className="max-w-[85%] rounded-3xl px-3 py-2 text-slate-900">
                   <TypingIndicator />
                 </div>
               </div>

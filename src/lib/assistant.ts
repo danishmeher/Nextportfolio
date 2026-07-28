@@ -135,6 +135,28 @@ function normalizeText(text: string) {
   return text.toLowerCase();
 }
 
+export function shortenAssistantReply(text: string): string {
+  const cleaned = text.replace(/\s+/g, " ").trim();
+
+  if (!cleaned) {
+    return "";
+  }
+
+  const firstPassage = cleaned
+    .split(/(?<=[.!?])\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(" ");
+
+  const compact = firstPassage || cleaned;
+
+  if (compact.length > 180) {
+    return `${compact.slice(0, 177).trimEnd()}...`;
+  }
+
+  return compact;
+}
+
 export function findRelevantChunks(question: string) {
   const normalizedQuestion = normalizeText(question);
 
@@ -195,7 +217,7 @@ export function buildAssistantPrompt(
 
 If the user asks for contact details, give them plainly and naturally. If the question is unrelated, briefly say you can help with Danish's work, projects, skills, or how to reach him. Keep the reply short, easy to read, and conversational.
 
-Use bullet points when listing a few options, and keep the overall response brief.
+Reply in one short paragraph or up to two short sentences. If you need to list options, use at most two bullets and keep each bullet extremely brief. Do not exceed about 40 words.
 
 Portfolio details:
 ${retrievedText}
