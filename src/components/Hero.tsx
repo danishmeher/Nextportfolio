@@ -163,7 +163,7 @@ export default function Hero() {
               <div className="relative w-[240px] sm:w-[300px] md:w-[360px] lg:w-[420px] rounded-full bg-gradient-to-br from-indigo-500 via-violet-500 to-cyan-500 p-1.5 mx-auto">
                 <div className="relative rounded-full overflow-hidden bg-white p-1 aspect-square">
                   <Image
-                    src="/danish.png"
+                    src="/DanishImage.png"
                     alt="Danish - Frontend Developer"
                     width={420}
                     height={420}
@@ -172,54 +172,6 @@ export default function Hero() {
                   />
                 </div>
               </div>
-
-              {/* Floating badges */}
-              <motion.div
-                className="absolute -top-2 -right-2 rounded-2xl bg-white shadow-lg border border-slate-100 px-4 py-2.5 flex items-center gap-2"
-                animate={{ y: [0, -8, 0] }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <span className="text-lg">⚛️</span>
-                <span className="text-sm font-semibold text-slate-700">
-                  React
-                </span>
-              </motion.div>
-
-              <motion.div
-                className="absolute -bottom-2 -left-4 rounded-2xl bg-white shadow-lg border border-slate-100 px-4 py-2.5 flex items-center gap-2"
-                animate={{ y: [0, 8, 0] }}
-                transition={{
-                  duration: 3.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.5,
-                }}
-              >
-                <span className="text-lg">🚀</span>
-                <span className="text-sm font-semibold text-slate-700">
-                  Next.js
-                </span>
-              </motion.div>
-
-              <motion.div
-                className="absolute top-1/2 -left-8 rounded-2xl bg-white shadow-lg border border-slate-100 px-4 py-2.5 flex items-center gap-2"
-                animate={{ y: [0, -6, 0] }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 1,
-                }}
-              >
-                <span className="text-lg">💎</span>
-                <span className="text-sm font-semibold text-slate-700">
-                  JavaScript
-                </span>
-              </motion.div>
             </div>
           </motion.div>
         </div>
