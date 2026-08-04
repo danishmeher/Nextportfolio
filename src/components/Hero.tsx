@@ -48,8 +48,8 @@ export default function Hero() {
       <ParticleCanvas />
 
       {/* Ambient background glow colors */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-indigo-600/25 rounded-full blur-[140px] opacity-80 animate-blob pointer-events-none" />
-      <div className="absolute top-1/3 -right-32 w-96 h-96 bg-cyan-500/25 rounded-full blur-[140px] opacity-80 animate-blob animation-delay-2000 pointer-events-none" />
+      <div className="absolute top-1/4 -left-32 w-72 sm:w-96 h-72 sm:h-96 bg-indigo-600/25 rounded-full blur-3xl md:blur-[120px] opacity-80 animate-blob pointer-events-none will-change-transform" />
+      <div className="absolute top-1/3 -right-32 w-72 sm:w-96 h-72 sm:h-96 bg-cyan-500/25 rounded-full blur-3xl md:blur-[120px] opacity-80 animate-blob animation-delay-2000 pointer-events-none will-change-transform" />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 w-full">
         <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -160,30 +160,30 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.8, x: 60 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{
-              duration: 1,
-              delay: 0.3,
+              duration: 0.8,
+              delay: 0.1,
               ease: [0.16, 1, 0.3, 1] as const,
             }}
           >
             <div className="relative">
               {/* Spinning gradient ring background */}
               <motion.div
-                className="absolute -inset-6 rounded-full bg-gradient-to-tr from-indigo-600 via-cyan-400 to-emerald-400 opacity-60 blur-2xl"
+                className="absolute -inset-6 rounded-full bg-gradient-to-tr from-indigo-600 via-cyan-400 to-emerald-400 opacity-60 blur-xl md:blur-2xl will-change-transform"
                 animate={{
                   rotate: [0, 360],
                   scale: [1, 1.05, 1],
                 }}
                 transition={{
-                  rotate: { duration: 15, repeat: Infinity, ease: "linear" },
-                  scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                  rotate: { duration: 18, repeat: Infinity, ease: "linear" },
+                  scale: { duration: 5, repeat: Infinity, ease: "easeInOut" },
                 }}
               />
 
               {/* Outer rotating neon dashed ring */}
               <motion.div
-                className="absolute -inset-3 rounded-full border-2 border-dashed border-cyan-400/40 pointer-events-none"
+                className="absolute -inset-3 rounded-full border-2 border-dashed border-cyan-400/40 pointer-events-none will-change-transform"
                 animate={{ rotate: [360, 0] }}
-                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
               />
 
               {/* Main Avatar container */}
@@ -196,6 +196,8 @@ export default function Hero() {
                     height={420}
                     className="rounded-full object-cover w-full h-full transform hover:scale-108 transition-transform duration-700"
                     priority
+                    fetchPriority="high"
+                    unoptimized
                     sizes="(max-width: 768px) 260px, (max-width: 1024px) 380px, 420px"
                   />
                 </div>

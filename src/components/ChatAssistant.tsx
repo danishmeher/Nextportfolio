@@ -183,10 +183,10 @@ export default function ChatAssistant() {
         current.map((message, index) =>
           index === assistantIndex
             ? {
-                ...message,
-                text: "Sorry — connection issue. Please try again.",
-                streaming: false,
-              }
+              ...message,
+              text: "Sorry — connection issue. Please try again.",
+              streaming: false,
+            }
             : message
         )
       );
@@ -248,9 +248,8 @@ export default function ChatAssistant() {
                 return (
                   <div
                     key={`${message.role}-${index}`}
-                    className={`flex items-start gap-2.5 ${
-                      isAssistant ? "justify-start" : "justify-end"
-                    }`}
+                    className={`flex items-start gap-2.5 ${isAssistant ? "justify-start" : "justify-end"
+                      }`}
                   >
                     {isAssistant && (
                       <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 mt-0.5">
@@ -258,11 +257,10 @@ export default function ChatAssistant() {
                       </div>
                     )}
                     <div
-                      className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 shadow-sm ${
-                        isAssistant
+                      className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 shadow-sm ${isAssistant
                           ? "bg-slate-900/90 text-slate-200 border border-indigo-500/20"
                           : "bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-medium"
-                      }`}
+                        }`}
                     >
                       <div className="wrap-break-word">
                         {isAssistant ? (
@@ -327,11 +325,10 @@ export default function ChatAssistant() {
                 <button
                   type="submit"
                   disabled={loading || !input.trim()}
-                  className={`inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-cyan-500 text-white shadow-md transition-all ${
-                    loading || !input.trim()
+                  className={`inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-cyan-500 text-white shadow-md transition-all ${loading || !input.trim()
                       ? "opacity-50 cursor-not-allowed"
                       : "hover:scale-105"
-                  }`}
+                    }`}
                   aria-label="Send message"
                 >
                   <Send size={13} />

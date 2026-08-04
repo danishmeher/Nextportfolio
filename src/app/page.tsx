@@ -1,4 +1,3 @@
-import Preloader from "@/components/Preloader";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -15,7 +14,6 @@ import ClientChatAssistant from "@/components/ClientChatAssistant";
 export default function HomePage() {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-300">
-      <Preloader />
       <ScrollProgress />
       <MouseGlow />
       <Navbar />

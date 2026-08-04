@@ -38,6 +38,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="preconnect" href="https://firestore.googleapis.com" />
+        <link rel="preload" href="/DanishImage.webp" as="image" type="image/webp" fetchPriority="high" />
       </head>
       <body className="bg-slate-950 text-slate-100 antialiased selection:bg-indigo-500 selection:text-white transition-colors duration-300">
         <AuthProvider>
