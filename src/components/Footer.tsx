@@ -87,13 +87,6 @@ export default function Footer() {
               </a>
             </div>
           </div>
-
-          <div className="my-8 h-px bg-[var(--border-color)]" />
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-[var(--text-muted)]">
-            <p>© {new Date().getFullYear()} Danish. Built with Next.js, React & Tailwind CSS.</p>
-            <p className="text-indigo-400 font-bold">Frontend Engineer Portfolio</p>
-          </div>
         </motion.div>
       </div>
     </footer>
