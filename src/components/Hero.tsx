@@ -190,12 +190,13 @@ export default function Hero() {
               <div className="relative w-[260px] sm:w-[320px] md:w-[380px] lg:w-[420px] rounded-full bg-gradient-to-br from-indigo-500 via-cyan-400 to-emerald-400 p-1.5 shadow-2xl mx-auto">
                 <div className="relative rounded-full overflow-hidden bg-slate-950 p-1 aspect-square">
                   <Image
-                    src="/DanishImage.png"
+                    src="/DanishImage.webp"
                     alt="Danish - Frontend Developer"
                     width={420}
                     height={420}
                     className="rounded-full object-cover w-full h-full transform hover:scale-108 transition-transform duration-700"
                     priority
+                    sizes="(max-width: 768px) 260px, (max-width: 1024px) 380px, 420px"
                   />
                 </div>
               </div>

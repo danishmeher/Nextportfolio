@@ -25,15 +25,20 @@ export const metadata: Metadata = {
     "Danish",
   ],
   icons: {
-    icon: "/Danish Fav.png",
-    shortcut: "/Danish Fav.png",
-    apple: "/Danish Fav.png",
+    icon: "/DanishFav.webp",
+    shortcut: "/DanishFav.webp",
+    apple: "/DanishFav.webp",
   },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`scroll-smooth dark ${inter.variable}`}>
+      <head>
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="preconnect" href="https://firestore.googleapis.com" />
+      </head>
       <body className="bg-slate-950 text-slate-100 antialiased selection:bg-indigo-500 selection:text-white transition-colors duration-300">
         <AuthProvider>
           <ThemeProvider>
