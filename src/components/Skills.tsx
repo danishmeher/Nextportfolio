@@ -48,35 +48,35 @@ const fallbackSkills: Skill[] = [
 const categories: SkillCategory[] = [
   {
     id: "frontend",
-    title: "Frontend",
-    color: "from-indigo-500 to-violet-500",
-    bgColor: "bg-indigo-50",
-    textColor: "text-indigo-600",
+    title: "Frontend Engineering",
+    color: "from-indigo-500 via-purple-500 to-indigo-400",
+    bgColor: "bg-indigo-500/10 border-indigo-500/30",
+    textColor: "text-indigo-400",
     order: 1,
     skills: [],
   },
   {
     id: "backend",
-    title: "Backend & CMS",
-    color: "from-cyan-500 to-blue-500",
-    bgColor: "bg-cyan-50",
-    textColor: "text-cyan-600",
+    title: "Backend & Enterprise CMS",
+    color: "from-cyan-500 via-teal-400 to-emerald-400",
+    bgColor: "bg-cyan-500/10 border-cyan-500/30",
+    textColor: "text-cyan-400",
     order: 2,
     skills: [],
   },
   {
     id: "tools",
-    title: "Tools & Other",
-    color: "from-emerald-500 to-teal-500",
-    bgColor: "bg-emerald-50",
-    textColor: "text-emerald-600",
+    title: "Tooling & Architecture",
+    color: "from-emerald-400 via-teal-400 to-cyan-400",
+    bgColor: "bg-emerald-500/10 border-emerald-500/30",
+    textColor: "text-emerald-400",
     order: 3,
     skills: [],
   },
 ];
 
 const slideUp = {
-  hidden: { opacity: 0, y: 60 },
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
@@ -112,43 +112,43 @@ function SkillCard({
   index: number;
 }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 80 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 80 }}
+      initial={{ opacity: 0, y: 60 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
       transition={{
         duration: 0.7,
         delay: index * 0.15,
         ease: [0.22, 1, 0.36, 1] as const,
       }}
-      className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm transition-all duration-500 hover:shadow-lg"
+      className="glass-card glass-card-hover rounded-3xl p-8"
     >
       <div
-        className={`mb-6 inline-flex items-center gap-2 rounded-xl ${category.bgColor} px-4 py-2`}
+        className={`mb-8 inline-flex items-center gap-2 rounded-xl border px-4 py-2 backdrop-blur-md ${category.bgColor}`}
       >
-        <span className={`text-sm font-bold ${category.textColor}`}>
+        <span className={`text-xs font-bold uppercase tracking-wider ${category.textColor}`}>
           {category.title}
         </span>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-6">
         {category.skills.map((skill, si) => (
           <div key={skill.name}>
-            <div className="mb-1.5 flex justify-between">
-              <span className="text-sm font-medium text-slate-700">
+            <div className="mb-2 flex justify-between items-center">
+              <span className="text-sm font-bold text-[var(--text-main)]">
                 {skill.name}
               </span>
-              <span className="text-sm font-semibold text-slate-500">
+              <span className="text-xs font-bold text-[var(--text-muted)]">
                 {skill.level}%
               </span>
             </div>
 
-            <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+            <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-800/20 dark:bg-slate-800/80 p-0.5 border border-[var(--border-color)]">
               <motion.div
-                className={`h-full rounded-full bg-gradient-to-r ${category.color}`}
+                className={`h-full rounded-full bg-gradient-to-r ${category.color} shadow-sm shadow-indigo-500/50`}
                 initial={{ width: 0 }}
                 animate={isInView ? { width: `${skill.level}%` } : { width: 0 }}
                 transition={{
@@ -167,7 +167,7 @@ function SkillCard({
 
 export default function Skills() {
   const headingRef = useRef(null);
-  const headingInView = useInView(headingRef, { once: true, margin: "-100px" });
+  const headingInView = useInView(headingRef, { once: true, margin: "-80px" });
 
   const [skills, setSkills] = useState<Skill[]>(fallbackSkills);
 
@@ -194,7 +194,6 @@ export default function Skills() {
           seeded = true;
           try {
             await seedSkillsToFirebase(missingSkills);
-            console.log("Missing fallback skills pushed to Firebase");
           } catch (error) {
             console.error("Failed to seed Firebase skills:", error);
           }
@@ -217,7 +216,7 @@ export default function Skills() {
   }, []);
 
   return (
-    <section id="skills" className="relative bg-white py-24 md:py-32">
+    <section id="skills" className="relative py-20">
       <SectionDivider />
 
       <div className="mx-auto mt-16 max-w-6xl px-6">
@@ -233,24 +232,23 @@ export default function Skills() {
         >
           <motion.span
             variants={slideUp}
-            className="block text-sm font-semibold uppercase tracking-widest text-primary"
+            className="block text-xs font-bold uppercase tracking-widest text-indigo-400"
           >
-            Expertise
+            Technical Stack
           </motion.span>
 
           <motion.h2
             variants={slideUp}
-            className="mt-3 text-4xl font-bold text-slate-900 md:text-5xl"
+            className="mt-3 text-4xl font-black text-[var(--text-main)] md:text-5xl"
           >
-            Technical Skills
+            Skills & Capabilities
           </motion.h2>
 
           <motion.p
             variants={slideUp}
-            className="mx-auto mt-4 max-w-2xl text-lg text-slate-500"
+            className="mx-auto mt-4 max-w-2xl text-base text-[var(--text-muted)]"
           >
-            React, Next.js, TypeScript, HTML/CSS, Sitecore XM Cloud, REST APIs,
-            Git, and full-stack software engineering.
+            Specialized toolkit refined through enterprise project delivery, performance engineering, and composable web architecture.
           </motion.p>
         </motion.div>
 

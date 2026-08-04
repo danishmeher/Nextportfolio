@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, useInView } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import {
   collection,
   doc,
@@ -13,6 +13,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import TiltCard from "./TiltCard";
 
 type Project = {
   id?: string;
@@ -35,7 +36,7 @@ const fallbackProjects: Project[] = [
     description:
       "Enterprise hygiene solutions platform built with Sitecore XM Cloud and React. Composable architecture with reusable component library.",
     tags: ["Sitecore XM Cloud", "React", "Enterprise"],
-    color: "from-indigo-500 to-violet-600",
+    color: "from-indigo-600 to-violet-600",
     imageUrl:
       "https://images.unsplash.com/photo-1516509204642-7b4bd28d2f0b?auto=format&fit=crop&w=900&q=80",
     icon: "🏢",
@@ -49,7 +50,7 @@ const fallbackProjects: Project[] = [
     description:
       "Workwear solutions platform with Sitecore composable journeys. Modern e-commerce experience with personalized content delivery.",
     tags: ["Sitecore", "Composable", "React"],
-    color: "from-blue-500 to-cyan-500",
+    color: "from-blue-600 to-cyan-500",
     imageUrl:
       "https://images.unsplash.com/photo-1521279488024-7b3b6a4feda7?auto=format&fit=crop&w=900&q=80",
     icon: "👔",
@@ -60,7 +61,7 @@ const fallbackProjects: Project[] = [
 ];
 
 const slideUp = {
-  hidden: { opacity: 0, y: 60 },
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
@@ -114,31 +115,38 @@ function ProjectCard({
   featured: boolean;
 }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
   const handleClick = () => {
     if (project.link) {
       window.open(project.link, "_blank", "noopener,noreferrer");
     }
   };
 
-  if (featured) {
-    return (
-      <motion.div
-        ref={ref}
-        initial={{ opacity: 0, y: 80 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 80 }}
-        transition={{
-          duration: 0.7,
-          delay: index * 0.12,
-          ease: [0.22, 1, 0.36, 1] as const,
-        }}
+  return (
+    <motion.div
+      ref={ref}
+      layout
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.95 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.08,
+        ease: [0.22, 1, 0.36, 1] as const,
+      }}
+    >
+      <TiltCard
         onClick={handleClick}
-        className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl ${
+        className={`group glass-card glass-card-hover relative flex flex-col h-full overflow-hidden rounded-3xl p-0 transition-all duration-500 ${
           project.link ? "cursor-pointer" : ""
         }`}
       >
+        {/* Top Banner Image / Graphic */}
         <div
-          className={`relative flex h-36 items-center justify-center overflow-hidden bg-gradient-to-br ${project.color}`}
+          className={`relative flex h-48 w-full items-center justify-center overflow-hidden bg-gradient-to-br ${
+            project.color || "from-indigo-600 to-cyan-500"
+          }`}
         >
           {project.imageUrl ? (
             <Image
@@ -146,126 +154,75 @@ function ProjectCard({
               alt={project.title}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover"
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
             />
           ) : (
-            <motion.span
-              className="text-5xl"
-              whileHover={{ scale: 1.3, rotate: 5 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
+            <span className="text-5xl transform transition-transform group-hover:scale-125">
               {project.icon || "📁"}
-            </motion.span>
+            </span>
+          )}
+          <div className="absolute inset-0 bg-slate-950/30 group-hover:bg-slate-950/0 transition-colors duration-300" />
+
+          {featured && (
+            <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-slate-950/80 backdrop-blur-md border border-amber-500/40 px-3 py-1 text-xs font-bold text-amber-300 shadow-md z-10">
+              <Sparkles size={12} className="text-amber-400 animate-spin" style={{ animationDuration: "6s" }} />
+              Featured Project
+            </div>
           )}
         </div>
 
-        <div className="flex flex-1 flex-col p-6">
-          <div className="mb-3 flex items-center justify-between">
+        {/* Content */}
+        <div className="flex flex-1 flex-col p-6 md:p-8">
+          <div className="mb-3 flex items-start justify-between gap-4">
             <div>
               {project.company ? (
-                <p className="text-sm font-medium text-slate-500 mb-1">
+                <p className="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-1">
                   {project.company}
                 </p>
               ) : null}
-              <h3 className="text-lg font-bold text-slate-900 transition-colors group-hover:text-primary">
+              <h3 className="text-xl font-black text-[var(--text-main)] transition-colors group-hover:text-indigo-400">
                 {project.title}
               </h3>
             </div>
-            <ArrowUpRight
-              size={18}
-              className="text-slate-300 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
-            />
+            <div className="flex items-center justify-center w-9 h-9 rounded-full border border-[var(--border-color)] text-[var(--text-muted)] group-hover:border-indigo-500 group-hover:text-indigo-400 group-hover:scale-110 transition-all duration-300">
+              <ArrowUpRight
+                size={18}
+                className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              />
+            </div>
           </div>
 
-          <p className="flex-1 text-sm leading-relaxed text-slate-500">
+          <p className="flex-1 text-sm leading-relaxed text-[var(--text-muted)]">
             {project.description}
           </p>
 
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-6 flex flex-wrap gap-2">
             {project.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-slate-100 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600"
+                className="rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 text-xs font-semibold text-indigo-400"
               >
                 {tag}
               </span>
             ))}
           </div>
         </div>
-      </motion.div>
-    );
-  }
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 60 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
-      transition={{
-        duration: 0.6,
-        delay: index * 0.08,
-        ease: [0.22, 1, 0.36, 1] as const,
-      }}
-      onClick={handleClick}
-      className={`group flex h-full flex-col rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-lg ${
-        project.link ? "cursor-pointer" : ""
-      }`}
-    >
-      <div className="mb-3 flex items-center gap-3">
-        <div className="relative h-12 w-12 overflow-hidden rounded-xl bg-slate-100">
-          {project.imageUrl ? (
-            <Image
-              src={project.imageUrl}
-              alt={project.title}
-              fill
-              sizes="48px"
-              className="object-cover"
-            />
-          ) : (
-            <span className="flex h-full w-full items-center justify-center text-2xl">
-              {project.icon || "📁"}
-            </span>
-          )}
-        </div>
-        <div>
-          {project.company ? (
-            <p className="text-sm font-medium text-slate-500 mb-1">
-              {project.company}
-            </p>
-          ) : null}
-          <h3 className="text-base font-bold text-slate-900 transition-colors group-hover:text-primary">
-            {project.title}
-          </h3>
-        </div>
-      </div>
-
-      <p className="flex-1 text-sm leading-relaxed text-slate-500">
-        {project.description}
-      </p>
-
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {project.tags.map((tag) => (
-          <span
-            key={tag}
-            className="rounded-full border border-slate-100 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-500"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
+      </TiltCard>
     </motion.div>
   );
 }
 
 export default function Projects() {
   const headingRef = useRef(null);
-  const headingInView = useInView(headingRef, { once: true, margin: "-100px" });
+  const headingInView = useInView(headingRef, { once: true, margin: "-80px" });
 
   const [projects, setProjects] = useState<Project[]>(fallbackProjects);
+  const [activeFilter, setActiveFilter] = useState<string>("All");
+
+  const filterCategories = ["All", "Sitecore & Enterprise", "React & Next.js"];
 
   useEffect(() => {
     let seeded = false;
-
     const q = query(collection(db, "projects"), orderBy("order", "asc"));
 
     const unsubscribe = onSnapshot(
@@ -281,28 +238,24 @@ export default function Projects() {
 
           if (!seeded) {
             seeded = true;
-
             try {
               await seedProjectsToFirestore(missingProjects);
-              console.log("Missing fallback projects seeded to Firestore");
             } catch (error) {
-              console.error("Failed to seed missing projects to Firestore:", error);
+              console.error("Failed to seed missing projects:", error);
             }
           }
-
           return;
         }
 
         const firebaseProjects: Project[] = snapshot.docs.map((doc) => {
           const data = doc.data();
-
           return {
             id: doc.id,
             title: data.title || "",
             description: data.description || "",
             company: data.company || "",
             tags: Array.isArray(data.tags) ? data.tags : [],
-            color: data.color || "from-slate-500 to-slate-700",
+            color: data.color || "from-indigo-600 to-cyan-500",
             icon: typeof data.icon === "string" ? data.icon : undefined,
             imageUrl: typeof data.imageUrl === "string" ? data.imageUrl : undefined,
             link: typeof data.link === "string" ? data.link : undefined,
@@ -322,15 +275,26 @@ export default function Projects() {
     return () => unsubscribe();
   }, []);
 
-  const featured = projects.filter((p) => p.featured);
-  const others = projects.filter((p) => !p.featured);
+  const filteredProjects = projects.filter((project) => {
+    if (activeFilter === "All") return true;
+    if (activeFilter === "Sitecore & Enterprise") {
+      return (
+        project.tags.some((t) => t.toLowerCase().includes("sitecore") || t.toLowerCase().includes("enterprise")) ||
+        project.description.toLowerCase().includes("sitecore")
+      );
+    }
+    if (activeFilter === "React & Next.js") {
+      return project.tags.some((t) => t.toLowerCase().includes("react") || t.toLowerCase().includes("next"));
+    }
+    return true;
+  });
 
   return (
-    <section id="projects" className="relative bg-surface py-24 md:py-32">
+    <section id="projects" className="relative py-20">
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
           ref={headingRef}
-          className="mb-16 text-center"
+          className="mb-12 text-center"
           initial="hidden"
           animate={headingInView ? "visible" : "hidden"}
           variants={{
@@ -340,48 +304,63 @@ export default function Projects() {
         >
           <motion.span
             variants={slideUp}
-            className="block text-sm font-semibold uppercase tracking-widest text-primary"
+            className="block text-xs font-bold uppercase tracking-widest text-indigo-400"
           >
             Portfolio
           </motion.span>
 
           <motion.h2
             variants={slideUp}
-            className="mt-3 text-4xl font-bold text-slate-900 md:text-5xl"
+            className="mt-3 text-4xl font-black text-[var(--text-main)] md:text-5xl"
           >
-            Selected Projects
+            Featured Engineering Projects
           </motion.h2>
 
           <motion.p
             variants={slideUp}
-            className="mx-auto mt-4 max-w-2xl text-lg text-slate-500"
+            className="mx-auto mt-4 max-w-2xl text-base text-[var(--text-muted)]"
           >
-            A collection of projects I&apos;ve built, from enterprise platforms
-            to personal experiments.
+            Showcasing production applications, enterprise Sitecore composable architectures, and scalable UI systems.
           </motion.p>
         </motion.div>
 
-        <div className="mb-8 grid gap-6 md:grid-cols-3">
-          {featured.map((project, i) => (
-            <ProjectCard
-              key={project.id || project.title}
-              project={project}
-              index={i}
-              featured={true}
-            />
+        {/* Filter Tabs */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
+          {filterCategories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveFilter(cat)}
+              className={`relative rounded-full px-6 py-2.5 text-xs font-bold transition-all duration-300 ${
+                activeFilter === cat
+                  ? "text-white shadow-lg shadow-indigo-500/25"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-main)]"
+              }`}
+            >
+              {activeFilter === cat && (
+                <motion.div
+                  layoutId="projectTab"
+                  className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">{cat}</span>
+            </button>
           ))}
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {others.map((project, i) => (
-            <ProjectCard
-              key={project.id || project.title}
-              project={project}
-              index={i}
-              featured={false}
-            />
-          ))}
-        </div>
+        {/* Projects Grid */}
+        <motion.div layout className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2">
+          <AnimatePresence>
+            {filteredProjects.map((project, i) => (
+              <ProjectCard
+                key={project.id || project.title}
+                project={project}
+                index={i}
+                featured={project.featured}
+              />
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </section>
   );

@@ -7,11 +7,15 @@ import Skills from "@/components/Skills";
 import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
-import ChatAssistant from "@/components/ChatAssistant";
+import ScrollProgress from "@/components/ScrollProgress";
+import MouseGlow from "@/components/MouseGlow";
+import ClientChatAssistant from "@/components/ClientChatAssistant";
 
 export default function HomePage() {
   return (
-    <>
+    <div className="relative min-h-screen overflow-x-hidden bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-300">
+      <ScrollProgress />
+      <MouseGlow />
       <Navbar />
       <main>
         <Hero />
@@ -23,7 +27,7 @@ export default function HomePage() {
         <Contact />
       </main>
       <Footer />
-      <ChatAssistant />
-    </>
+      <ClientChatAssistant />
+    </div>
   );
 }

@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowDown, Mail } from "lucide-react";
+import { ArrowDown, Mail, Sparkles, Code2, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import ParticleCanvas from "./ParticleCanvas";
 
 function GithubIcon({ size = 20 }: { size?: number }) {
   return (
@@ -24,16 +25,16 @@ const container = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.2 },
+    transition: { staggerChildren: 0.12, delayChildren: 0.1 },
   },
 };
 
 const item = {
-  hidden: { opacity: 0, y: 60 },
+  hidden: { opacity: 0, y: 35 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const },
   },
 };
 
@@ -41,14 +42,16 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
     >
-      {/* Decorative blobs */}
-      <div className="absolute top-20 -left-32 w-72 h-72 bg-indigo-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" />
-      <div className="absolute top-40 -right-32 w-72 h-72 bg-cyan-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000" />
-      <div className="absolute -bottom-20 left-1/3 w-72 h-72 bg-violet-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000" />
+      {/* 60fps Particle canvas background */}
+      <ParticleCanvas />
 
-      <div className="relative z-10 mx-auto max-w-6xl px-6 py-32 w-full">
+      {/* Ambient background glow colors */}
+      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-indigo-600/25 rounded-full blur-[140px] opacity-80 animate-blob pointer-events-none" />
+      <div className="absolute top-1/3 -right-32 w-96 h-96 bg-cyan-500/25 rounded-full blur-[140px] opacity-80 animate-blob animation-delay-2000 pointer-events-none" />
+
+      <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 w-full">
         <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left: Text content */}
           <motion.div
@@ -57,117 +60,141 @@ export default function Hero() {
             animate="visible"
           >
             <motion.div variants={item}>
-              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-primary mb-6">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                Available for work
+              <div className="inline-flex items-center gap-2.5 rounded-full border border-indigo-500/40 bg-indigo-500/10 px-4 py-2 text-xs font-bold text-indigo-400 backdrop-blur-xl mb-6 shadow-lg shadow-indigo-500/10 animate-shimmer">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+                </span>
+                <span>Available for projects & full-time roles</span>
               </div>
             </motion.div>
 
             <motion.h1
               variants={item}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 leading-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[var(--text-main)] leading-[1.1]"
             >
               Hi, I&apos;m{" "}
-              <span className="gradient-text">Danish</span>
+              <span className="gradient-text drop-shadow-sm">Danish</span>
             </motion.h1>
+
+            <motion.div variants={item} className="mt-4 flex items-center gap-2 text-indigo-400 font-bold text-lg">
+              <Sparkles size={20} className="animate-spin text-cyan-400" style={{ animationDuration: "8s" }} />
+              <span>Frontend Developer & Sitecore XM Cloud Engineer</span>
+            </motion.div>
 
             <motion.p
               variants={item}
-              className="mt-5 text-lg lg:text-xl font-light text-slate-500 max-w-lg leading-relaxed"
+              className="mt-5 text-base lg:text-lg font-normal text-[var(--text-muted)] max-w-lg leading-relaxed"
             >
-              Frontend Developer specializing in{" "}
-              <span className="font-medium text-slate-700">React</span>,{" "}
-              <span className="font-medium text-slate-700">Next.js</span> &{" "}
-              <span className="font-medium text-slate-700">JavaScript</span>.
-              Building clean digital experiences and scalable UI systems.
+              Building high-concurrency, scalable frontend platforms at{" "}
+              <span className="font-bold text-[var(--text-main)]">7 Kings Code</span>.
+              Specializing in <span className="font-semibold text-indigo-400">React</span>,{" "}
+              <span className="font-semibold text-indigo-400">Next.js</span>, and{" "}
+              <span className="font-semibold text-indigo-400">Sitecore XM Cloud</span> integrations.
             </motion.p>
 
             <motion.div
               variants={item}
               className="mt-8 flex flex-wrap items-center gap-4"
             >
-              <a
+              <motion.a
                 href="#projects"
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3 text-base font-semibold text-white shadow-lg shadow-primary/25 hover:bg-primary-dark hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5"
+                whileHover={{ scale: 1.06, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                className="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 px-8 py-4 text-sm font-bold text-white shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-300"
               >
-                View My Work
+                View Selected Work
                 <ArrowDown size={18} />
-              </a>
-              <a
+              </motion.a>
+
+              <motion.a
                 href="#contact"
-                className="inline-flex items-center gap-2 rounded-full border-2 border-slate-200 bg-white px-7 py-3 text-base font-semibold text-slate-700 hover:border-primary hover:text-primary transition-all duration-300 hover:-translate-y-0.5"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-7 py-4 text-sm font-bold text-[var(--text-main)] hover:border-indigo-500 hover:text-indigo-400 transition-all duration-300 shadow-sm backdrop-blur-md"
               >
                 Get In Touch
-              </a>
+              </motion.a>
             </motion.div>
 
             <motion.div
               variants={item}
-              className="mt-8 flex items-center gap-4"
+              className="mt-10 flex items-center gap-4"
             >
-              <a
+              <motion.a
+                whileHover={{ scale: 1.15, rotate: 5 }}
                 href="https://github.com/danishmeher"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-11 h-11 rounded-full border border-slate-200 text-slate-500 hover:border-primary hover:text-primary hover:bg-indigo-50 transition-all duration-300"
+                className="flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:border-indigo-500 hover:text-indigo-400 transition-all duration-300 shadow-md"
                 aria-label="GitHub"
               >
                 <GithubIcon size={20} />
-              </a>
-              <a
+              </motion.a>
+
+              <motion.a
+                whileHover={{ scale: 1.15, rotate: -5 }}
                 href="https://www.linkedin.com/in/danishriazdani/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-11 h-11 rounded-full border border-slate-200 text-slate-500 hover:border-primary hover:text-primary hover:bg-indigo-50 transition-all duration-300"
+                className="flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:border-indigo-500 hover:text-indigo-400 transition-all duration-300 shadow-md"
                 aria-label="LinkedIn"
               >
                 <LinkedinIcon size={20} />
-              </a>
-              <a
-                href="mailto:danish@example.com"
-                className="flex items-center justify-center w-11 h-11 rounded-full border border-slate-200 text-slate-500 hover:border-primary hover:text-primary hover:bg-indigo-50 transition-all duration-300"
+              </motion.a>
+
+              <motion.a
+                whileHover={{ scale: 1.15, rotate: 5 }}
+                href="mailto:danish.daniriaz@gmail.com"
+                className="flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:border-indigo-500 hover:text-indigo-400 transition-all duration-300 shadow-md"
                 aria-label="Email"
               >
                 <Mail size={20} />
-              </a>
+              </motion.a>
             </motion.div>
           </motion.div>
 
-          {/* Right: Hero image */}
+          {/* Right: Floating Avatar frame with rotating neon ring & floating badge physics */}
           <motion.div
-            className="flex justify-center md:justify-end"
+            className="flex justify-center md:justify-end relative"
             initial={{ opacity: 0, scale: 0.8, x: 60 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{
               duration: 1,
-              delay: 0.4,
-              ease: [0.22, 1, 0.36, 1] as const,
+              delay: 0.3,
+              ease: [0.16, 1, 0.3, 1] as const,
             }}
           >
             <div className="relative">
-              {/* Decorative ring behind image */}
+              {/* Spinning gradient ring background */}
               <motion.div
-                className="absolute -inset-4 rounded-full bg-gradient-to-br from-indigo-500/20 via-violet-500/20 to-cyan-500/20 blur-2xl"
+                className="absolute -inset-6 rounded-full bg-gradient-to-tr from-indigo-600 via-cyan-400 to-emerald-400 opacity-60 blur-2xl"
                 animate={{
+                  rotate: [0, 360],
                   scale: [1, 1.05, 1],
-                  opacity: [0.5, 0.8, 0.5],
                 }}
                 transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
+                  rotate: { duration: 15, repeat: Infinity, ease: "linear" },
+                  scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
                 }}
               />
 
-              {/* Gradient border */}
-              <div className="relative w-[240px] sm:w-[300px] md:w-[360px] lg:w-[420px] rounded-full bg-gradient-to-br from-indigo-500 via-violet-500 to-cyan-500 p-1.5 mx-auto">
-                <div className="relative rounded-full overflow-hidden bg-white p-1 aspect-square">
+              {/* Outer rotating neon dashed ring */}
+              <motion.div
+                className="absolute -inset-3 rounded-full border-2 border-dashed border-cyan-400/40 pointer-events-none"
+                animate={{ rotate: [360, 0] }}
+                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+              />
+
+              {/* Main Avatar container */}
+              <div className="relative w-[260px] sm:w-[320px] md:w-[380px] lg:w-[420px] rounded-full bg-gradient-to-br from-indigo-500 via-cyan-400 to-emerald-400 p-1.5 shadow-2xl mx-auto">
+                <div className="relative rounded-full overflow-hidden bg-slate-950 p-1 aspect-square">
                   <Image
                     src="/DanishImage.png"
                     alt="Danish - Frontend Developer"
                     width={420}
                     height={420}
-                    className="rounded-full object-cover w-full h-full"
+                    className="rounded-full object-cover w-full h-full transform hover:scale-108 transition-transform duration-700"
                     priority
                   />
                 </div>
@@ -180,14 +207,14 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.2 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-400"
+          transition={{ duration: 1, delay: 1 }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[var(--text-muted)]"
         >
-          <span className="text-xs font-medium tracking-widest uppercase">
-            Scroll
+          <span className="text-[10px] font-bold tracking-widest uppercase text-indigo-400">
+            Scroll Down
           </span>
           <motion.div
-            className="w-5 h-8 rounded-full border-2 border-slate-300 flex items-start justify-center p-1"
+            className="w-5 h-8 rounded-full border border-indigo-500/40 flex items-start justify-center p-1 bg-indigo-500/10"
             animate={{ y: [0, 6, 0] }}
             transition={{
               duration: 1.8,
@@ -195,7 +222,7 @@ export default function Hero() {
               ease: "easeInOut",
             }}
           >
-            <div className="w-1 h-2 rounded-full bg-primary" />
+            <div className="w-1.5 h-2 rounded-full bg-indigo-400" />
           </motion.div>
         </motion.div>
       </div>

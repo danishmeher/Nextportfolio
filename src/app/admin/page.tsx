@@ -166,9 +166,8 @@ export default function AdminDashboard() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-slate-200 z-50 transform transition-transform lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-slate-200 z-50 transform transition-transform lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="p-6 border-b border-slate-100">
           <div className="flex items-center justify-between">
@@ -191,11 +190,10 @@ export default function AdminDashboard() {
                 setActiveTab(tab.id);
                 setSidebarOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
-                activeTab === tab.id
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${activeTab === tab.id
                   ? "bg-primary text-white shadow-lg shadow-primary/25"
                   : "text-slate-600 hover:bg-slate-100"
-              }`}
+                }`}
             >
               <tab.icon size={20} />
               <span className="font-medium">{tab.label}</span>
@@ -225,13 +223,16 @@ export default function AdminDashboard() {
       {/* Main content */}
       <main className="lg:ml-64 pt-16 lg:pt-0 min-h-screen">
         <div className="p-6 lg:p-8">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-            <span>Dashboard</span>
-            <ChevronRight size={16} />
-            <span className="text-slate-900 font-medium">
-              {tabs.find((t) => t.id === activeTab)?.label}
-            </span>
+          {/* Header & Session Timer */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              <span>Dashboard</span>
+              <ChevronRight size={16} />
+              <span className="text-slate-900 font-medium">
+                {tabs.find((t) => t.id === activeTab)?.label}
+              </span>
+            </div>
+            <AdminSessionTimer />
           </div>
 
           {dataLoading ? (
@@ -729,11 +730,10 @@ function ProjectsTab({
                         key={color}
                         type="button"
                         onClick={() => setEditing({ ...editing, color })}
-                        className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} ${
-                          editing.color === color
+                        className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} ${editing.color === color
                             ? "ring-2 ring-offset-2 ring-primary"
                             : ""
-                        }`}
+                          }`}
                       />
                     ))}
                   </div>
@@ -793,9 +793,8 @@ function ProjectsTab({
               setDraggingId(null);
               setDragOverId(null);
             }}
-            className={`bg-white rounded-2xl border border-slate-100 p-5 shadow-sm flex items-center gap-4 ${
-              dragOverId === project.id ? "ring-2 ring-offset-1 ring-primary" : ""
-            }`}
+            className={`bg-white rounded-2xl border border-slate-100 p-5 shadow-sm flex items-center gap-4 ${dragOverId === project.id ? "ring-2 ring-offset-1 ring-primary" : ""
+              }`}
           >
             <div
               className={`w-14 h-14 rounded-xl bg-gradient-to-br ${project.color} flex items-center justify-center overflow-hidden shrink-0`}
@@ -1103,9 +1102,8 @@ function SkillsTab({
                     setDraggingSkillId(null);
                     setDragOverSkillId(null);
                   }}
-                  className={`flex items-center gap-4 p-3 bg-slate-50 rounded-xl ${
-                    dragOverSkillId === skill.id ? "ring-2 ring-offset-1 ring-primary" : ""
-                  }`}
+                  className={`flex items-center gap-4 p-3 bg-slate-50 rounded-xl ${dragOverSkillId === skill.id ? "ring-2 ring-offset-1 ring-primary" : ""
+                    }`}
                 >
                   <div className="flex-1">
                     <div className="flex justify-between mb-1">

@@ -12,39 +12,39 @@ export type KnowledgeChunk = {
 export const knowledgeChunks: KnowledgeChunk[] = [
   {
     id: "about",
-    title: "About Danish",
-    text: "Danish is a frontend developer focused on building polished digital experiences with React, Next.js, TypeScript, and Tailwind CSS.",
-    tags: ["frontend", "react", "next.js", "typescript", "tailwind", "portfolio", "developer"],
+    title: "About Danish (Identity & Specialization)",
+    text: "Danish (Danish Riaz Dani) is a Senior Frontend Developer & UI Architect specializing in React, Next.js, TypeScript, Sitecore XM Cloud, and modern web application development. He works at 7 Kings Code, engineering reusable component systems and enterprise web platforms.",
+    tags: ["frontend", "react", "next.js", "typescript", "sitecore", "7 kings code", "danish", "developer", "architect", "bio"],
   },
   {
     id: "experience",
-    title: "Current Role and Career Experience",
-    text: "He works as a Frontend Developer, building reusable UI components and web applications for modern products.",
-    tags: ["experience", "career", "work", "job", "company", "role", "7 kings code", "global study expertz"],
+    title: "Career Experience & Professional Background",
+    text: "Currently Frontend Developer at 7 Kings Code, building enterprise platforms with React and Sitecore XM Cloud for clients like CWS Hygiene and CWS Workwear. Previously Website Developer at Global Study Expertz, building React, Next.js, and Tailwind web applications.",
+    tags: ["experience", "career", "work", "job", "company", "role", "7 kings code", "global study expertz", "cws hygiene", "cws workwear"],
   },
   {
     id: "skills",
-    title: "Skills",
-    text: "He has expertise in frontend development, modern frameworks, UI engineering, and product-focused implementation.",
-    tags: ["skills", "technologies", "stack", "react", "next.js", "typescript", "backend", "frontend", "tools", "tailwind"],
+    title: "Technical Skills & Engineering Stack",
+    text: "Primary Stack: React, Next.js, TypeScript, Sitecore XM Cloud, Tailwind CSS, Framer Motion. Backend & Cloud: Node.js, REST APIs, Firebase Firestore & Auth, PostgreSQL, Drizzle ORM. Tooling: Git, GitHub, Figma, Turbopack, Vercel.",
+    tags: ["skills", "technologies", "stack", "react", "next.js", "typescript", "sitecore xm cloud", "backend", "frontend", "tools", "tailwind", "firebase"],
   },
   {
     id: "projects",
-    title: "Projects",
-    text: "The portfolio highlights featured projects, product work, and case studies.",
-    tags: ["projects", "portfolio", "work examples", "case studies", "cws hygiene", "cws workwear", "sitecore"],
+    title: "Key Projects & Case Studies",
+    text: "1. CWS Hygiene (7 Kings Code): Enterprise hygiene solutions platform built with Sitecore XM Cloud & React. 2. CWS Workwear (CWS Global): Composable e-commerce workwear platform. 3. Modern Next.js Portfolio: High-performance portfolio with AI assistant, Firebase integration, and Framer Motion 3D animations.",
+    tags: ["projects", "portfolio", "work examples", "case studies", "cws hygiene", "cws workwear", "sitecore", "enterprise"],
   },
   {
     id: "contact",
-    title: "Contact",
-    text: "Visitors can contact Danish through the contact section on the portfolio, by email, by phone, or via the resume button in the navigation bar.",
-    tags: ["contact", "email", "phone", "number", "resume", "cv", "reach", "call"],
+    title: "Contact Information & Links",
+    text: "Email: danish.daniriaz@gmail.com | Phone: +92 302 4111148 | Location: Pakistan | LinkedIn: https://www.linkedin.com/in/danishriazdani/ | GitHub: https://github.com/danishmeher | Resume: /DanishResume.pdf",
+    tags: ["contact", "email", "phone", "number", "resume", "cv", "linkedin", "github", "hire", "reach"],
   },
   {
     id: "hobbies",
-    title: "Hobbies and Interests",
-    text: "Outside of professional frontend engineering, Danish enjoys cricket, gaming, and outdoor sports.",
-    tags: ["hobbies", "interests", "free time", "cricket", "games", "sports", "fun", "play", "gaming"],
+    title: "Hobbies, Personal Life & Interests",
+    text: "Outside of engineering clean UI systems, Danish is an avid cricket player, competitive gamer, tech enthusiast, and enjoys outdoor sports.",
+    tags: ["hobbies", "interests", "free time", "cricket", "games", "sports", "fun", "gaming", "personal"],
   },
 ];
 
@@ -60,14 +60,14 @@ export async function getLiveProjectsContext(): Promise<string> {
     const projectsList = querySnapshot.docs.map((doc) => {
       const data = doc.data();
       const companyStr = data.company ? ` at ${data.company}` : "";
-      const tagsStr = Array.isArray(data.tags) && data.tags.length > 0 ? ` (Built using: ${data.tags.join(", ")})` : "";
+      const tagsStr = Array.isArray(data.tags) && data.tags.length > 0 ? ` (${data.tags.join(", ")})` : "";
       return `- ${data.title}${companyStr}: ${data.description}${tagsStr}`;
     });
 
     return projectsList.join("\n");
   } catch (error) {
     console.error("Failed to fetch live projects from Firestore:", error);
-    return "- CWS Hygiene at 7 Kings Code: Enterprise hygiene solutions platform built with Sitecore XM Cloud and React.\n- CWS Workwear at CWS Global: Workwear solutions platform with Sitecore composable journeys and React.";
+    return "- CWS Hygiene at 7 Kings Code: Enterprise hygiene platform built with Sitecore XM Cloud and React.\n- CWS Workwear at CWS Global: Workwear e-commerce platform with Sitecore composable architecture.";
   }
 }
 
@@ -91,11 +91,11 @@ export async function getLiveSkillsContext(): Promise<string> {
     });
 
     return Object.entries(skillsByCategory)
-      .map(([cat, list]) => `- ${cat.charAt(0).toUpperCase() + cat.slice(1)} Skills: ${list.join(", ")}`)
+      .map(([cat, list]) => `- ${cat.toUpperCase()}: ${list.join(", ")}`)
       .join("\n");
   } catch (error) {
     console.error("Failed to fetch live skills from Firestore:", error);
-    return "- Frontend Skills: React, Next.js, TypeScript, HTML/CSS, Tailwind CSS\n- Backend Skills: Sitecore XM Cloud, REST APIs, Firebase, Node.js\n- Tools: Git, Figma";
+    return "- FRONTEND: React, Next.js, TypeScript, HTML/CSS, Tailwind CSS\n- BACKEND: Sitecore XM Cloud, REST APIs, Firebase, Node.js\n- TOOLS: Git, Figma";
   }
 }
 
@@ -111,8 +111,7 @@ export async function getLiveExperienceContext(): Promise<string> {
     const expList = querySnapshot.docs.map((doc) => {
       const data = doc.data();
       const currentStr = data.current ? " (Current Role)" : "";
-      const tagsStr = Array.isArray(data.tags) && data.tags.length > 0 ? ` (Keywords: ${data.tags.join(", ")})` : "";
-      return `- ${data.role} at ${data.company} [${data.period}]${currentStr}: ${data.description}${tagsStr}`;
+      return `- ${data.role} at ${data.company} [${data.period}]${currentStr}: ${data.description}`;
     });
 
     return expList.join("\n");
@@ -127,7 +126,7 @@ export async function getLiveContactContext(): Promise<string> {
     return getPortfolioProfileContext();
   } catch (error) {
     console.error("Failed to build profile context:", error);
-    return "Name: Danish\nRole: Frontend Developer\nEmail: danish.daniriaz@gmail.com\nPhone: +92 302 4111148\nResume: /DanishCV.pdf";
+    return "Name: Danish Riaz Dani\nRole: Senior Frontend Developer\nEmail: danish.daniriaz@gmail.com\nPhone: +92 302 4111148\nResume: /DanishResume.pdf";
   }
 }
 
@@ -135,26 +134,25 @@ function normalizeText(text: string) {
   return text.toLowerCase();
 }
 
+// Ensures AI responses are punchy, concise, and to the point without excessive text
 export function shortenAssistantReply(text: string): string {
-  const cleaned = text.replace(/\s+/g, " ").trim();
+  const cleaned = text.trim();
+  if (!cleaned) return "I can help answer questions about Danish's work, skills, and contact info!";
 
-  if (!cleaned) {
-    return "";
+  // Keep response under ~300 chars, taking the first 2 concise sentences
+  const sentences = cleaned.match(/[^.!?]+[.!?]+/g);
+  if (sentences && sentences.length > 0) {
+    const shortText = sentences.slice(0, 2).join(" ").trim();
+    if (shortText.length <= 320) {
+      return shortText;
+    }
   }
 
-  const firstPassage = cleaned
-    .split(/(?<=[.!?])\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .join(" ");
-
-  const compact = firstPassage || cleaned;
-
-  if (compact.length > 180) {
-    return `${compact.slice(0, 177).trimEnd()}...`;
+  if (cleaned.length > 300) {
+    return cleaned.slice(0, 290).trim() + "...";
   }
 
-  return compact;
+  return cleaned;
 }
 
 export function findRelevantChunks(question: string) {
@@ -163,20 +161,21 @@ export function findRelevantChunks(question: string) {
   return knowledgeChunks
     .map((chunk) => {
       const titleScore = chunk.tags.reduce(
-        (score, tag) => score + (normalizedQuestion.includes(tag.toLowerCase()) ? 2 : 0),
+        (score, tag) => score + (normalizedQuestion.includes(tag.toLowerCase()) ? 2.5 : 0),
         0
       );
       const textScore = chunk.text
         .split(/\s+/)
         .reduce(
-          (score, word) => score + (normalizedQuestion.includes(word.toLowerCase()) ? 0.25 : 0),
+          (score, word) => score + (normalizedQuestion.includes(word.toLowerCase()) ? 0.3 : 0),
           0
         );
-      const contactBoost = chunk.id === "contact" && /(phone|number|call|contact|email|resume|cv|reach)/i.test(question) ? 3 : 0;
+      const contactBoost = chunk.id === "contact" && /(phone|number|call|contact|email|resume|cv|reach|hire)/i.test(question) ? 4 : 0;
+      const experienceBoost = chunk.id === "experience" && /(work|job|experience|company|7 kings|code)/i.test(question) ? 4 : 0;
 
       return {
         chunk,
-        score: titleScore + textScore + contactBoost,
+        score: titleScore + textScore + contactBoost + experienceBoost,
       };
     })
     .filter((item) => item.score > 0)
@@ -198,31 +197,28 @@ export function buildAssistantPrompt(
   const retrievedText = chunks
     .map((chunk) => {
       if (chunk.id === "projects" && liveContexts?.projects) {
-        return `- ${chunk.title}:\n${liveContexts.projects}`;
+        return `${chunk.title}:\n${liveContexts.projects}`;
       }
       if (chunk.id === "skills" && liveContexts?.skills) {
-        return `- ${chunk.title}:\n${liveContexts.skills}`;
+        return `${chunk.title}:\n${liveContexts.skills}`;
       }
       if (chunk.id === "experience" && liveContexts?.experience) {
-        return `- ${chunk.title}:\n${liveContexts.experience}`;
+        return `${chunk.title}:\n${liveContexts.experience}`;
       }
       if (chunk.id === "contact" && liveContexts?.contact) {
-        return `- ${chunk.title}:\n${liveContexts.contact}`;
+        return `${chunk.title}:\n${liveContexts.contact}`;
       }
-      return `- ${chunk.title}: ${chunk.text}`;
+      return `${chunk.title}: ${chunk.text}`;
     })
-    .join("\n");
+    .join("\n\n");
 
-  return `You are Danish's portfolio assistant. Speak like a friendly human, not a robot. Be warm, direct, and concise. Use the portfolio details below to answer the user's question accurately.
+  return `You are Danish's AI assistant. 
+CRITICAL DIRECTIVE: Be extremely concise, direct, and to the point. Do NOT write long paragraphs. Answer the user's question directly in 1 to 2 short sentences or max 2 bullet points. Maximum 40 words total.
 
-If the user asks for contact details, give them plainly and naturally. If the question is unrelated, briefly say you can help with Danish's work, projects, skills, or how to reach him. Keep the reply short, easy to read, and conversational.
-
-Reply in one short paragraph or up to two short sentences. If you need to list options, use at most two bullets and keep each bullet extremely brief. Do not exceed about 40 words.
-
-Portfolio details:
+Portfolio Details:
 ${retrievedText}
 
-Question: ${question}
+User Question: ${question}
 
-Answer:`;
+Concise Answer:`;
 }

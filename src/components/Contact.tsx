@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { portfolioProfile } from "@/lib/site-content";
 
 const slideUp = {
-  hidden: { opacity: 0, y: 60 },
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
@@ -17,7 +17,7 @@ const slideUp = {
 };
 
 const slideFromLeft = {
-  hidden: { opacity: 0, x: -60 },
+  hidden: { opacity: 0, x: -40 },
   visible: {
     opacity: 1,
     x: 0,
@@ -26,7 +26,7 @@ const slideFromLeft = {
 };
 
 const slideFromRight = {
-  hidden: { opacity: 0, x: 60 },
+  hidden: { opacity: 0, x: 40 },
   visible: {
     opacity: 1,
     x: 0,
@@ -48,7 +48,7 @@ export default function Contact() {
   const leftRef = useRef(null);
   const rightRef = useRef(null);
 
-  const headingInView = useInView(headingRef, { once: true, margin: "-100px" });
+  const headingInView = useInView(headingRef, { once: true, margin: "-80px" });
   const leftInView = useInView(leftRef, { once: true, margin: "-80px" });
   const rightInView = useInView(rightRef, { once: true, margin: "-80px" });
 
@@ -63,7 +63,6 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setLoading(true);
     try {
       const res = await fetch("/api/contact", {
@@ -81,9 +80,7 @@ export default function Contact() {
       }
 
       setSubmitted(true);
-      console.log(data.message)
-      toast.success(data.message || "Message sent successfully!")
-
+      toast.success(data.message || "Message sent successfully!");
 
       setFormData({
         name: "",
@@ -96,14 +93,13 @@ export default function Contact() {
     } catch (error) {
       console.error(error);
       toast.error("Failed to send message. Please try again.");
-
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section id="contact" className="relative bg-white py-24 md:py-32">
+    <section id="contact" className="relative py-20">
       <SectionDivider />
       <div className="mx-auto mt-16 max-w-6xl px-6">
         <motion.div
@@ -118,29 +114,28 @@ export default function Contact() {
         >
           <motion.span
             variants={slideUp}
-            className="block text-sm font-semibold uppercase tracking-widest text-primary"
+            className="block text-xs font-bold uppercase tracking-widest text-indigo-400"
           >
-            Contact
+            Get In Touch
           </motion.span>
           <motion.h2
             variants={slideUp}
-            className="mt-3 text-4xl font-bold text-slate-900 md:text-5xl"
+            className="mt-3 text-4xl font-black text-[var(--text-main)] md:text-5xl"
           >
-            Let&apos;s Work Together
+            Let&apos;s Build Together
           </motion.h2>
           <motion.p
             variants={slideUp}
-            className="mx-auto mt-4 max-w-2xl text-lg text-slate-500"
+            className="mx-auto mt-4 max-w-2xl text-base text-[var(--text-muted)]"
           >
-            Have a project in mind? I&apos;d love to hear about it. Drop me a
-            message and let&apos;s create something amazing.
+            Have a project in mind, an engineering role, or a technical inquiry? Drop a message below and I&apos;ll get back to you promptly.
           </motion.p>
         </motion.div>
 
         <div className="mx-auto grid max-w-5xl gap-12 md:grid-cols-5">
           <motion.div
             ref={leftRef}
-            className="space-y-6 md:col-span-2"
+            className="space-y-4 md:col-span-2"
             initial="hidden"
             animate={leftInView ? "visible" : "hidden"}
             variants={{
@@ -149,13 +144,13 @@ export default function Contact() {
             }}
           >
             <motion.div variants={slideFromLeft}>
-              <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-white p-5 transition-all duration-300 hover:shadow-md">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-primary">
-                  <Mail size={22} />
+              <div className="glass-card glass-card-hover flex items-start gap-4 rounded-2xl p-5">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                  <Mail size={20} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">Email</h3>
-                  <p className="mt-0.5 text-sm text-slate-500">
+                  <h3 className="font-bold text-[var(--text-main)] text-sm">Email</h3>
+                  <p className="mt-0.5 text-xs text-[var(--text-muted)] font-medium">
                     {portfolioProfile.email}
                   </p>
                 </div>
@@ -163,13 +158,13 @@ export default function Contact() {
             </motion.div>
 
             <motion.div variants={slideFromLeft}>
-              <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-white p-5 transition-all duration-300 hover:shadow-md">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-primary">
-                  <PhoneCall size={22} />
+              <div className="glass-card glass-card-hover flex items-start gap-4 rounded-2xl p-5">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                  <PhoneCall size={20} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">Phone Number</h3>
-                  <p className="mt-0.5 text-sm text-slate-500">
+                  <h3 className="font-bold text-[var(--text-main)] text-sm">Phone</h3>
+                  <p className="mt-0.5 text-xs text-[var(--text-muted)] font-medium">
                     {portfolioProfile.phone}
                   </p>
                 </div>
@@ -177,26 +172,24 @@ export default function Contact() {
             </motion.div>
 
             <motion.div variants={slideFromLeft}>
-              <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-white p-5 transition-all duration-300 hover:shadow-md">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-primary">
-                  <MapPin size={22} />
+              <div className="glass-card glass-card-hover flex items-start gap-4 rounded-2xl p-5">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                  <MapPin size={20} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">Location</h3>
-                  <p className="mt-0.5 text-sm text-slate-500">
+                  <h3 className="font-bold text-[var(--text-main)] text-sm">Location</h3>
+                  <p className="mt-0.5 text-xs text-[var(--text-muted)] font-medium">
                     {portfolioProfile.location}
                   </p>
                 </div>
               </div>
             </motion.div>
 
-
             <motion.div variants={slideFromLeft}>
-              <div className="rounded-2xl bg-linear-to-br from-indigo-500 to-violet-600 p-6 text-white">
-                <h3 className="mb-2 text-lg font-bold">Quick Response</h3>
-                <p className="text-sm leading-relaxed text-indigo-100">
-                  {portfolioProfile.responseTime} For urgent projects, mention
-                  it in your message and I&apos;ll prioritize your request.
+              <div className="rounded-2xl bg-gradient-to-br from-indigo-600 via-indigo-500 to-cyan-500 p-6 text-white shadow-xl shadow-indigo-500/20">
+                <h3 className="mb-2 text-base font-bold">Fast Response Guarantee</h3>
+                <p className="text-xs leading-relaxed opacity-90 font-medium">
+                  {portfolioProfile.responseTime} For urgent project inquiries, mark your subject as &quot;Urgent&quot; for prioritized handling.
                 </p>
               </div>
             </motion.div>
@@ -211,84 +204,84 @@ export default function Contact() {
           >
             <form
               onSubmit={handleSubmit}
-              className="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm"
+              className="glass-card rounded-3xl p-8 shadow-xl"
             >
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
                     Name
                   </label>
                   <input
                     name="name"
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="Your Name"
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                    className="w-full rounded-xl border border-[var(--border-color)] bg-[var(--bg-main)] px-4 py-3 text-sm text-[var(--text-main)] placeholder:text-[var(--text-muted)] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
                     Email
                   </label>
                   <input
                     name="email"
                     type="email"
-                    placeholder="john@example.com"
+                    placeholder="your.email@example.com"
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                    className="w-full rounded-xl border border-[var(--border-color)] bg-[var(--bg-main)] px-4 py-3 text-sm text-[var(--text-main)] placeholder:text-[var(--text-muted)] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
                   />
                 </div>
               </div>
 
               <div className="mt-5">
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   Subject
                 </label>
                 <input
                   name="subject"
                   type="text"
-                  placeholder="Project Inquiry"
+                  placeholder="Project Collaboration / Job Opportunity"
                   required
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                  className="w-full rounded-xl border border-[var(--border-color)] bg-[var(--bg-main)] px-4 py-3 text-sm text-[var(--text-main)] placeholder:text-[var(--text-muted)] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
                 />
               </div>
 
               <div className="mt-5">
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   Message
                 </label>
                 <textarea
                   name="message"
                   rows={5}
-                  placeholder="Tell me about your project..."
+                  placeholder="Tell me about your project goals or requirements..."
                   required
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                  className="w-full resize-none rounded-xl border border-[var(--border-color)] bg-[var(--bg-main)] px-4 py-3 text-sm text-[var(--text-main)] placeholder:text-[var(--text-muted)] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
                 />
               </div>
 
               <motion.button
                 type="submit"
                 disabled={submitted || loading}
-                className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-base font-semibold text-white transition-all duration-300 ${submitted
-                    ? "bg-emerald-500"
-                    : "bg-primary shadow-lg shadow-primary/25 hover:bg-primary-dark hover:shadow-xl hover:shadow-primary/30"
-                  } ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
-                whileHover={!submitted && !loading ? { y: -2 } : {}}
+                className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-bold text-white transition-all duration-300 ${
+                  submitted
+                    ? "bg-emerald-500 shadow-lg shadow-emerald-500/30"
+                    : "bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02]"
+                } ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
                 whileTap={!submitted && !loading ? { scale: 0.98 } : {}}
               >
                 {submitted ? (
                   <>
-                    <CheckCircle size={20} />
-                    Message Sent!
+                    <CheckCircle size={18} />
+                    Message Sent Successfully!
                   </>
                 ) : (
                   <>

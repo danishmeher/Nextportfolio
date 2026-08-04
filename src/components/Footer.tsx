@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Heart } from "lucide-react";
 
 function GithubIcon({ size = 18 }: { size?: number }) {
   return (
@@ -34,12 +33,12 @@ export default function Footer() {
   const isInView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
-    <footer className="bg-slate-900 text-white">
-      <div className="mx-auto max-w-6xl px-6 py-16">
+    <footer className="border-t border-[var(--border-color)] bg-[var(--bg-main)] py-12 text-[var(--text-main)] transition-colors duration-300">
+      <div className="mx-auto max-w-6xl px-6">
         <motion.div
           ref={ref}
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{
             duration: 0.7,
             ease: [0.22, 1, 0.36, 1] as const,
@@ -47,9 +46,9 @@ export default function Footer() {
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             {/* Logo */}
-            <a href="#home" className="text-2xl font-bold tracking-tight">
+            <a href="#home" className="text-2xl font-black tracking-tight flex items-center gap-1">
               <span className="gradient-text">D</span>anish
-              <span className="gradient-text">.</span>
+              <span className="text-indigo-500">.</span>
             </a>
 
             {/* Links */}
@@ -58,7 +57,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    className="text-sm text-slate-400 hover:text-white transition-colors"
+                    className="text-xs font-semibold text-[var(--text-muted)] hover:text-indigo-400 transition-colors"
                   >
                     {link.label}
                   </a>
@@ -67,12 +66,12 @@ export default function Footer() {
             </ul>
 
             {/* Social */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <a
                 href="https://github.com/danishmeher"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 text-slate-400 hover:border-primary hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="flex items-center justify-center w-10 h-10 rounded-full border border-[var(--border-color)] text-[var(--text-muted)] hover:border-indigo-500 hover:text-indigo-400 transition-all duration-300 shadow-sm"
                 aria-label="GitHub"
               >
                 <GithubIcon />
@@ -81,7 +80,7 @@ export default function Footer() {
                 href="https://www.linkedin.com/in/danishriazdani/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-700 text-slate-400 hover:border-primary hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="flex items-center justify-center w-10 h-10 rounded-full border border-[var(--border-color)] text-[var(--text-muted)] hover:border-indigo-500 hover:text-indigo-400 transition-all duration-300 shadow-sm"
                 aria-label="LinkedIn"
               >
                 <LinkedinIcon />
@@ -89,11 +88,11 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="my-10 h-px bg-slate-800" />
+          <div className="my-8 h-px bg-[var(--border-color)]" />
 
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-sm text-slate-500">
-            <p>© {new Date().getFullYear()} Danish. All rights reserved.</p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-[var(--text-muted)]">
+            <p>© {new Date().getFullYear()} Danish. Built with Next.js, React & Tailwind CSS.</p>
+            <p className="text-indigo-400 font-bold">Frontend Engineer Portfolio</p>
           </div>
         </motion.div>
       </div>
