@@ -191,8 +191,8 @@ export default function AdminDashboard() {
                 setSidebarOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${activeTab === tab.id
-                  ? "bg-primary text-white shadow-lg shadow-primary/25"
-                  : "text-slate-600 hover:bg-slate-100"
+                ? "bg-primary text-white shadow-lg shadow-primary/25"
+                : "text-slate-600 hover:bg-slate-100"
                 }`}
             >
               <tab.icon size={20} />
@@ -232,7 +232,6 @@ export default function AdminDashboard() {
                 {tabs.find((t) => t.id === activeTab)?.label}
               </span>
             </div>
-            <AdminSessionTimer />
           </div>
 
           {dataLoading ? (
@@ -731,8 +730,8 @@ function ProjectsTab({
                         type="button"
                         onClick={() => setEditing({ ...editing, color })}
                         className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} ${editing.color === color
-                            ? "ring-2 ring-offset-2 ring-primary"
-                            : ""
+                          ? "ring-2 ring-offset-2 ring-primary"
+                          : ""
                           }`}
                       />
                     ))}
