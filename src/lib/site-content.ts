@@ -14,9 +14,9 @@ export type PortfolioProfile = {
 
 export const portfolioProfile: PortfolioProfile = {
   name: "Danish",
-  role: "Frontend Developer",
+  role: "Full Stack Developer",
   summary:
-    "Frontend developer focused on building polished web experiences with React, Next.js, TypeScript, and Tailwind CSS.",
+    "Full Stack developer focused on building polished web applications with React, Next.js, Node.js, TypeScript, and Tailwind CSS.",
   email: "danish.daniriaz@gmail.com",
   phone: "+92 302 4111148",
   location: "Available Hybrid",

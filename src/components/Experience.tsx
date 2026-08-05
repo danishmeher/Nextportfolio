@@ -26,12 +26,12 @@ type ExperienceItem = {
 
 const fallbackExperiences: ExperienceItem[] = [
   {
-    role: "Frontend Developer",
+    role: "Full Stack Developer",
     company: "7 Kings Code",
     period: "Current",
     description:
-      "Building reusable UI components with React, integrating Sitecore XM Cloud for enterprise clients. Developing frontend systems, component libraries, and modern web applications for CWS Hygiene and CWS Workwear projects.",
-    tags: ["React", "Sitecore XM Cloud", "TypeScript", "Frontend Components"],
+      "Building reusable UI components and scalable backend systems with React, Node.js, and Sitecore XM Cloud for enterprise clients. Developing full stack platforms and modern web applications for CWS Hygiene and CWS Workwear projects.",
+    tags: ["React", "Sitecore XM Cloud", "TypeScript", "Full Stack Development"],
     current: true,
     order: 1,
   },

@@ -337,8 +337,8 @@ export async function initializeDefaultData() {
   // Default hero info
   await updateHeroInfo({
     name: "Danish",
-    title: "Frontend Developer",
-    subtitle: "Frontend Developer specializing in React, Next.js & TypeScript. Building clean digital experiences and scalable UI systems.",
+    title: "Full Stack Developer",
+    subtitle: "Full Stack Developer specializing in React, Next.js, Node.js & TypeScript. Building clean digital experiences and scalable software systems.",
     available: true,
     email: "danish@example.com",
     github: "https://github.com/danish",
@@ -348,7 +348,7 @@ export async function initializeDefaultData() {
   // Default about info
   await updateAboutInfo({
     paragraphs: [
-      "I'm a Frontend Developer focused on building clean digital experiences and frontend systems.",
+      "I'm a Full Stack Developer focused on building clean digital experiences and modern web systems.",
       "Currently working as a Full Stack Developer at 7 Kings Code, where I build reusable UI components and deliver modern web applications.",
       "I'm passionate about creating interfaces that are not only visually appealing but also highly functional and accessible.",
     ],

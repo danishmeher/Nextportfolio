@@ -396,7 +396,7 @@ function HeroTab({
               type="text"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </div>
           <div>
@@ -407,7 +407,7 @@ function HeroTab({
               type="text"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </div>
         </div>
@@ -420,7 +420,7 @@ function HeroTab({
             value={form.subtitle}
             onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
             rows={3}
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
           />
         </div>
 
@@ -433,7 +433,7 @@ function HeroTab({
               type="email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </div>
           <div>
@@ -444,7 +444,7 @@ function HeroTab({
               type="url"
               value={form.github}
               onChange={(e) => setForm({ ...form, github: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </div>
           <div>
@@ -455,7 +455,7 @@ function HeroTab({
               type="url"
               value={form.linkedin}
               onChange={(e) => setForm({ ...form, linkedin: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
           </div>
         </div>
@@ -640,7 +640,7 @@ function ProjectsTab({
                         setEditing({ ...editing, imageUrl: e.target.value })
                       }
                       placeholder="https://..."
-                      className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary"
                     />
                   </div>
                   <div className="col-span-3 grid gap-4">
@@ -654,7 +654,7 @@ function ProjectsTab({
                         onChange={(e) =>
                           setEditing({ ...editing, title: e.target.value })
                         }
-                        className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary"
                       />
                     </div>
                     <div>
@@ -668,7 +668,7 @@ function ProjectsTab({
                           setEditing({ ...editing, company: e.target.value })
                         }
                         placeholder="Optional company name"
-                        className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary"
                       />
                     </div>
                     <div>
@@ -682,7 +682,7 @@ function ProjectsTab({
                           setEditing({ ...editing, link: e.target.value })
                         }
                         placeholder="https://example.com"
-                        className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary"
                       />
                     </div>
                   </div>
@@ -698,7 +698,7 @@ function ProjectsTab({
                       setEditing({ ...editing, description: e.target.value })
                     }
                     rows={3}
-                    className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary resize-none"
                   />
                 </div>
 
@@ -715,7 +715,7 @@ function ProjectsTab({
                         tags: e.target.value.split(",").map((t) => t.trim()),
                       })
                     }
-                    className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1016,7 +1016,7 @@ function SkillsTab({
                     onChange={(e) =>
                       setEditing({ ...editing, name: e.target.value })
                     }
-                    className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1032,7 +1032,7 @@ function SkillsTab({
                         category: e.target.value as Skill["category"],
                       })
                     }
-                    className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-primary"
                   >
                     {categories.map((cat) => (
                       <option key={cat.id} value={cat.id}>
@@ -1250,7 +1250,7 @@ function ExperienceTab({
                       onChange={(e) =>
                         setEditing({ ...editing, role: e.target.value })
                       }
-                      className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary"
                     />
                   </div>
                   <div>
@@ -1263,7 +1263,7 @@ function ExperienceTab({
                       onChange={(e) =>
                         setEditing({ ...editing, company: e.target.value })
                       }
-                      className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
@@ -1279,7 +1279,7 @@ function ExperienceTab({
                       setEditing({ ...editing, period: e.target.value })
                     }
                     placeholder="e.g., Jan 2023 - Present"
-                    className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1293,7 +1293,7 @@ function ExperienceTab({
                       setEditing({ ...editing, description: e.target.value })
                     }
                     rows={3}
-                    className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary resize-none"
                   />
                 </div>
 
@@ -1310,7 +1310,7 @@ function ExperienceTab({
                         tags: e.target.value.split(",").map((t) => t.trim()),
                       })
                     }
-                    className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1469,7 +1469,7 @@ function ContactTab({
             type="email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
           />
         </div>
 
@@ -1481,7 +1481,7 @@ function ContactTab({
             type="text"
             value={form.location}
             onChange={(e) => setForm({ ...form, location: e.target.value })}
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
           />
         </div>
 
@@ -1493,7 +1493,7 @@ function ContactTab({
             value={form.responseNote}
             onChange={(e) => setForm({ ...form, responseNote: e.target.value })}
             rows={3}
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
           />
         </div>
       </div>

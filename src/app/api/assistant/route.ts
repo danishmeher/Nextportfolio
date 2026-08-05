@@ -99,33 +99,31 @@ function buildLocalAnswer(question: string, contactContext?: string) {
   if (/(phone|number|call|contact|reach|email)/i.test(question)) {
     const phoneMatch = contactContext?.match(/Phone:\s*(.+)/i);
     const emailMatch = contactContext?.match(/Email:\s*(.+)/i);
-    const resumeMatch = contactContext?.match(/Resume:\s*(.+)/i);
 
     const email = emailMatch?.[1] || portfolioProfile.email;
     const phone = phoneMatch?.[1] || portfolioProfile.phone;
-    const resume = resumeMatch?.[1] || portfolioProfile.resumeUrl;
 
-    return `You can reach Danish through the contact section on the site, by email at ${email}, or by phone at ${phone}. His resume is also available here: ${resume}.`;
+    return `You can easily reach Danish via email at **${email}** or by phone/WhatsApp at **${phone}**! 📩\n\nFeel free to send a message directly using the contact form at the bottom of the page!`;
   }
 
   if (normalized.includes("resume") || normalized.includes("cv")) {
-    return `His resume is available from the navigation bar here: ${portfolioProfile.resumeUrl}.`;
+    return `You can view and download Danish's latest CV directly from the header navigation bar! 📄\n\nIt covers his extensive experience at 7 Kings Code, technical stack, and key projects.`;
   }
 
-  if (normalized.includes("project") || normalized.includes("portfolio")) {
-    return `Danish has worked on a range of frontend and product-focused projects. I can point you to the featured work on his portfolio if you want.`;
+  if (normalized.includes("project") || normalized.includes("portfolio") || normalized.includes("work")) {
+    return `Danish has engineered several high-performance enterprise and full stack platforms — including **CWS Hygiene** and **CWS Workwear** at 7 Kings Code using React and Sitecore XM Cloud. 🚀\n\nCheck out the **Projects** section on this page to explore interactive demos and case studies!`;
   }
 
   if (normalized.includes("skill") || normalized.includes("stack") || normalized.includes("tech")) {
-    return `He works mainly with React, Next.js, TypeScript, and Tailwind CSS, with a strong focus on clean frontend experiences.`;
+    return `Danish's core stack revolves around **React**, **Next.js**, **TypeScript**, **Node.js**, **Sitecore XM Cloud**, and **Tailwind CSS**. 💻\n\nHe specializes in building scalable frontend component libraries, REST APIs, and full stack web applications!`;
   }
 
-  return `I can help with Danish's background, projects, skills, or how to get in touch. If you want, I can point you to the right section of the site.`;
+  return `Thanks for reaching out! I'm Danish's AI assistant. Feel free to ask me anything about his full stack development background, enterprise projects at 7 Kings Code, technical skills, or contact info. How can I help you today? 😊`;
 }
 
 export async function POST(req: Request) {
   try {
-    const { question } = await req.json();
+    const { question, history } = await req.json();
 
     if (!question || typeof question !== "string") {
       return NextResponse.json({ error: "Question is required." }, { status: 400 });
@@ -154,7 +152,8 @@ export async function POST(req: Request) {
     const prompt = buildAssistantPrompt(
       question,
       relevantChunks.length ? relevantChunks : knowledgeChunks,
-      { projects, skills, experience, contact }
+      { projects, skills, experience, contact },
+      Array.isArray(history) ? history : undefined
     );
 
     if (!GEMINI_API_KEY) {

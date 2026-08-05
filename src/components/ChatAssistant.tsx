@@ -154,12 +154,17 @@ export default function ChatAssistant() {
     setLoading(true);
 
     try {
+      const historyPayload = messages
+        .filter((m) => m.text && !m.streaming)
+        .slice(-6)
+        .map((m) => ({ role: m.role, text: m.text }));
+
       const response = await fetch("/api/assistant", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ question: trimmed }),
+        body: JSON.stringify({ question: trimmed, history: historyPayload }),
       });
 
       const data = await response.json();
@@ -213,12 +218,12 @@ export default function ChatAssistant() {
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-indigo-500/20 bg-gradient-to-r from-slate-950 via-indigo-950/40 to-slate-950 px-4 py-3">
-              <div className="flex items-center gap-2.5">
-                <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-400 text-white shadow-md">
-                  <Bot size={16} />
-                  <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+              <div className="flex items-center gap-3">
+                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl overflow-hidden border border-indigo-400/50 shadow-md">
+                  <img src="/Ai Profile.png" alt="AI Assistant" className="h-full w-full object-cover" />
+                  <span className="absolute top-0.5 right-0.5 flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 border border-slate-950"></span>
                   </span>
                 </div>
                 <div>
@@ -252,8 +257,8 @@ export default function ChatAssistant() {
                       }`}
                   >
                     {isAssistant && (
-                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 mt-0.5">
-                        <Bot size={12} />
+                      <div className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full overflow-hidden border border-indigo-400/50 shadow-sm mt-0.5">
+                        <img src="/Ai Profile.png" alt="AI Assistant" className="h-full w-full object-cover" />
                       </div>
                     )}
                     <div
@@ -271,8 +276,12 @@ export default function ChatAssistant() {
                       </div>
                     </div>
                     {!isAssistant && (
-                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 mt-0.5">
-                        <User size={12} />
+                      <div className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full overflow-hidden border border-cyan-400/40 shadow-sm mt-0.5">
+                        <img
+                          src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80"
+                          alt="User Avatar"
+                          className="h-full w-full object-cover"
+                        />
                       </div>
                     )}
                   </div>
@@ -281,8 +290,8 @@ export default function ChatAssistant() {
 
               {loading && (
                 <div className="flex items-center gap-2 justify-start">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
-                    <Bot size={12} />
+                  <div className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full overflow-hidden border border-indigo-400/50 shadow-sm">
+                    <img src="/Ai Profile.png" alt="AI Assistant" className="h-full w-full object-cover" />
                   </div>
                   <div className="rounded-2xl bg-slate-900 border border-indigo-500/20 px-3 py-1.5">
                     <TypingIndicator />
@@ -343,7 +352,7 @@ export default function ChatAssistant() {
       <motion.button
         whileHover={{ scale: 1.06 }}
         whileTap={{ scale: 0.95 }}
-        className="group relative inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 px-4.5 py-3 text-xs font-black text-white shadow-2xl shadow-indigo-500/30 border border-indigo-400/40 backdrop-blur-xl"
+        className="group relative inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 px-4 py-2.5 text-xs font-black text-white shadow-2xl shadow-indigo-500/30 border border-indigo-400/40 backdrop-blur-xl"
         onClick={() => setOpen((current) => !current)}
         aria-label="Toggle AI Assistant"
       >
@@ -351,7 +360,7 @@ export default function ChatAssistant() {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
         </span>
-        <Bot size={16} className="text-cyan-300" />
+        <img src="/Ai Profile.png" alt="AI" className="h-6 w-6 rounded-full object-cover border border-cyan-300/50 shadow-sm" />
         <span>{open ? "Close Assistant" : "Ask Danish AI"}</span>
       </motion.button>
     </div>

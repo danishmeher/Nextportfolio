@@ -13,20 +13,20 @@ export const knowledgeChunks: KnowledgeChunk[] = [
   {
     id: "about",
     title: "About Danish (Identity & Specialization)",
-    text: "Danish (Danish Riaz Dani) is a Senior Frontend Developer & UI Architect specializing in React, Next.js, TypeScript, Sitecore XM Cloud, and modern web application development. He works at 7 Kings Code, engineering reusable component systems and enterprise web platforms.",
-    tags: ["frontend", "react", "next.js", "typescript", "sitecore", "7 kings code", "danish", "developer", "architect", "bio"],
+    text: "Danish (Danish Riaz Dani) is a Senior Full Stack Developer & UI Architect specializing in React, Next.js, TypeScript, Sitecore XM Cloud, Node.js, and modern web application development. He works at 7 Kings Code, engineering reusable component systems and enterprise web platforms.",
+    tags: ["fullstack", "full stack", "react", "next.js", "typescript", "sitecore", "7 kings code", "danish", "developer", "architect", "bio"],
   },
   {
     id: "experience",
     title: "Career Experience & Professional Background",
-    text: "Currently Frontend Developer at 7 Kings Code, building enterprise platforms with React and Sitecore XM Cloud for clients like CWS Hygiene and CWS Workwear. Previously Website Developer at Global Study Expertz, building React, Next.js, and Tailwind web applications.",
+    text: "Currently Full Stack Developer at 7 Kings Code, building enterprise platforms with React, Node.js, and Sitecore XM Cloud for clients like CWS Hygiene and CWS Workwear. Previously Website Developer at Global Study Expertz, building React, Next.js, and Tailwind web applications.",
     tags: ["experience", "career", "work", "job", "company", "role", "7 kings code", "global study expertz", "cws hygiene", "cws workwear"],
   },
   {
     id: "skills",
     title: "Technical Skills & Engineering Stack",
     text: "Primary Stack: React, Next.js, TypeScript, Sitecore XM Cloud, Tailwind CSS, Framer Motion. Backend & Cloud: Node.js, REST APIs, Firebase Firestore & Auth, PostgreSQL, Drizzle ORM. Tooling: Git, GitHub, Figma, Turbopack, Vercel.",
-    tags: ["skills", "technologies", "stack", "react", "next.js", "typescript", "sitecore xm cloud", "backend", "frontend", "tools", "tailwind", "firebase"],
+    tags: ["skills", "technologies", "stack", "react", "next.js", "typescript", "sitecore xm cloud", "backend", "fullstack", "full stack", "tools", "tailwind", "firebase"],
   },
   {
     id: "projects",
@@ -117,7 +117,7 @@ export async function getLiveExperienceContext(): Promise<string> {
     return expList.join("\n");
   } catch (error) {
     console.error("Failed to fetch live experiences from Firestore:", error);
-    return "- Frontend Developer at 7 Kings Code (Current Role): Building reusable UI components with React, integrating Sitecore XM Cloud.\n- Website Developer at Global Study Expertz: Developed responsive web applications using React.js, Next.js, TypeScript, and Tailwind CSS.";
+    return "- Full Stack Developer at 7 Kings Code (Current Role): Building reusable UI & backend components with React, Node.js, and integrating Sitecore XM Cloud.\n- Website Developer at Global Study Expertz: Developed responsive web applications using React.js, Next.js, TypeScript, and Tailwind CSS.";
   }
 }
 
@@ -126,7 +126,7 @@ export async function getLiveContactContext(): Promise<string> {
     return getPortfolioProfileContext();
   } catch (error) {
     console.error("Failed to build profile context:", error);
-    return "Name: Danish Riaz Dani\nRole: Senior Frontend Developer\nEmail: danish.daniriaz@gmail.com\nPhone: +92 302 4111148\nResume: /DanishResume.pdf";
+    return "Name: Danish Riaz Dani\nRole: Senior Full Stack Developer\nEmail: danish.daniriaz@gmail.com\nPhone: +92 302 4111148\nResume: /DanishResume.pdf";
   }
 }
 
@@ -134,24 +134,10 @@ function normalizeText(text: string) {
   return text.toLowerCase();
 }
 
-// Ensures AI responses are punchy, concise, and to the point without excessive text
+// Cleans up output without arbitrarily truncating natural human thoughts
 export function shortenAssistantReply(text: string): string {
   const cleaned = text.trim();
-  if (!cleaned) return "I can help answer questions about Danish's work, skills, and contact info!";
-
-  // Keep response under ~300 chars, taking the first 2 concise sentences
-  const sentences = cleaned.match(/[^.!?]+[.!?]+/g);
-  if (sentences && sentences.length > 0) {
-    const shortText = sentences.slice(0, 2).join(" ").trim();
-    if (shortText.length <= 320) {
-      return shortText;
-    }
-  }
-
-  if (cleaned.length > 300) {
-    return cleaned.slice(0, 290).trim() + "...";
-  }
-
+  if (!cleaned) return "I'm here to help! Ask me anything about Danish's projects, experience, technical stack, or how to get in touch.";
   return cleaned;
 }
 
@@ -192,7 +178,8 @@ export function buildAssistantPrompt(
     skills?: string;
     experience?: string;
     contact?: string;
-  }
+  },
+  history?: { role: string; text: string }[]
 ) {
   const retrievedText = chunks
     .map((chunk) => {
@@ -212,13 +199,23 @@ export function buildAssistantPrompt(
     })
     .join("\n\n");
 
-  return `You are Danish's AI assistant. 
-CRITICAL DIRECTIVE: Be extremely concise, direct, and to the point. Do NOT write long paragraphs. Answer the user's question directly in 1 to 2 short sentences or max 2 bullet points. Maximum 40 words total.
+  const historyText = history && history.length > 0
+    ? `Recent Conversation Context:\n` + history.map(h => `${h.role === 'user' ? 'Visitor' : 'Assistant'}: ${h.text}`).join('\n') + `\n\n`
+    : ``;
 
-Portfolio Details:
+  return `You are Danish's official AI Portfolio Assistant — a warm, friendly, concise, and knowledgeable guide representing Danish Riaz Dani (Senior Full Stack Developer & Sitecore XM Cloud Engineer).
+
+PERSONALITY & COMMUNICATION STYLE:
+- Tone: Warm, human, helpful, and direct.
+- CONCISENESS DIRECTIVE: Keep responses brief, crisp, and conversational. Deliver a clear, helpful response in 1 to 2 short sentences or a max of 2-3 concise bullet points (around 40 to 60 words max). Do NOT write long paragraphs.
+- Speak naturally like a real human software engineer representing Danish.
+- Use formatting (bullet points, bold text for key terms) to make answers scannable and delightful to read.
+- If asked about hiring or contact, warmly encourage reaching out via email or LinkedIn.
+
+KNOWLEDGE BASE ABOUT DANISH:
 ${retrievedText}
 
-User Question: ${question}
+${historyText}Visitor Question: ${question}
 
-Concise Answer:`;
+Response (concise, warm, human, max 60 words):`;
 }

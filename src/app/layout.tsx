@@ -13,11 +13,11 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Danish | Frontend Developer Portfolio",
+  title: "Danish | Full Stack Developer Portfolio",
   description:
-    "Frontend developer specializing in React, Next.js, TypeScript, and modern web applications. Building clean digital experiences and scalable UI systems.",
+    "Full Stack developer specializing in React, Next.js, TypeScript, Node.js, and modern web applications. Building clean digital experiences and scalable platforms.",
   keywords: [
-    "Frontend Developer",
+    "Full Stack Developer",
     "React",
     "Next.js",
     "TypeScript",

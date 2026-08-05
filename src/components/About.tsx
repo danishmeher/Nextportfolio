@@ -106,8 +106,8 @@ export default function About() {
           >
             <motion.p variants={slideFromLeft} className="text-lg text-[var(--text-muted)] leading-relaxed">
               I&apos;m a{" "}
-              <span className="font-bold text-[var(--text-main)]">Frontend Developer</span>{" "}
-              specializing in constructing interactive, high-performance web applications and UI design systems.
+              <span className="font-bold text-[var(--text-main)]">Full Stack Developer</span>{" "}
+              specializing in constructing interactive, high-performance web applications and scalable software systems.
               My expertise centers around{" "}
               <span className="font-semibold text-indigo-400">React</span>,{" "}
               <span className="font-semibold text-indigo-400">Next.js</span>, and enterprise platforms like{" "}

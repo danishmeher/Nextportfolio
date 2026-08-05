@@ -79,14 +79,14 @@ export default function Hero() {
 
             <motion.div variants={item} className="mt-4 flex items-center gap-2 text-indigo-400 font-bold text-lg">
               <Sparkles size={20} className="animate-spin text-cyan-400" style={{ animationDuration: "8s" }} />
-              <span>Frontend Developer & Sitecore XM Cloud Engineer</span>
+              <span>Full Stack Developer & Sitecore XM Cloud Engineer</span>
             </motion.div>
 
             <motion.p
               variants={item}
               className="mt-5 text-base lg:text-lg font-normal text-[var(--text-muted)] max-w-lg leading-relaxed"
             >
-              Building high-concurrency, scalable frontend platforms at{" "}
+              Building high-concurrency, scalable frontend & backend platforms at{" "}
               <span className="font-bold text-[var(--text-main)]">7 Kings Code</span>.
               Specializing in <span className="font-semibold text-indigo-400">React</span>,{" "}
               <span className="font-semibold text-indigo-400">Next.js</span>, and{" "}
@@ -191,7 +191,7 @@ export default function Hero() {
                 <div className="relative rounded-full overflow-hidden bg-slate-950 p-1 aspect-square">
                   <Image
                     src="/DanishImage.webp"
-                    alt="Danish - Frontend Developer"
+                    alt="Danish - Full Stack Developer"
                     width={420}
                     height={420}
                     className="rounded-full object-cover w-full h-full transform hover:scale-108 transition-transform duration-700"
