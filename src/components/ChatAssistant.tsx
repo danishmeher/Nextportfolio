@@ -167,9 +167,15 @@ export default function ChatAssistant() {
         body: JSON.stringify({ question: trimmed, history: historyPayload }),
       });
 
-      const data = await response.json();
       if (!response.ok) {
-        const errorMessage = data?.error || "Assistant request failed.";
+        let errorMessage = "Assistant request failed.";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData?.error || errorMessage;
+        } catch {
+          const rawText = await response.text();
+          if (rawText) errorMessage = rawText;
+        }
         setMessages((current) =>
           current.map((message, index) =>
             index === assistantIndex ? { ...message, text: errorMessage, streaming: false } : message
@@ -179,9 +185,59 @@ export default function ChatAssistant() {
         return;
       }
 
-      const answer = data.answer || data.error || "Sorry, I couldn't generate a response right now.";
+      const contentType = response.headers.get("content-type") || "";
+
+      // Handle JSON response (e.g. structured or non-streamed errors)
+      if (contentType.includes("application/json")) {
+        const data = await response.json();
+        const answer = data.answer || data.error || "Sorry, I couldn't generate a response right now.";
+        setMessages((current) =>
+          current.map((message, index) =>
+            index === assistantIndex ? { ...message, text: answer, streaming: false } : message
+          )
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Handle real-time streaming response
+      const reader = response.body?.getReader();
+      if (!reader) {
+        const text = await response.text();
+        setMessages((current) =>
+          current.map((message, index) =>
+            index === assistantIndex ? { ...message, text, streaming: false } : message
+          )
+        );
+        setLoading(false);
+        return;
+      }
+
+      const decoder = new TextDecoder();
+      let accumulated = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        if (chunk) {
+          accumulated += chunk;
+          setLoading(false); // First token arrived, dismiss thinking indicator immediately
+          setMessages((current) =>
+            current.map((message, index) =>
+              index === assistantIndex ? { ...message, text: accumulated, streaming: true } : message
+            )
+          );
+        }
+      }
+
+      accumulated += decoder.decode();
+      setMessages((current) =>
+        current.map((message, index) =>
+          index === assistantIndex ? { ...message, text: accumulated, streaming: false } : message
+        )
+      );
       setLoading(false);
-      streamAssistantReply(answer, assistantIndex);
     } catch (error) {
       console.error("Assistant fetch error:", error);
       setMessages((current) =>

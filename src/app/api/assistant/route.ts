@@ -3,57 +3,67 @@ import { NextResponse } from "next/server";
 import {
   buildAssistantPrompt,
   findRelevantChunks,
-  getLiveProjectsContext,
-  shortenAssistantReply,
-  getLiveSkillsContext,
-  getLiveExperienceContext,
-  getLiveContactContext,
+  getAllLiveContexts,
   knowledgeChunks,
 } from "@/lib/assistant";
 import { portfolioProfile } from "@/lib/site-content";
 
+// Environment configurations (never hardcoded)
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY?.trim();
-const GEMINI_MODEL = (process.env.GEMINI_MODEL || "gemini-2.5-pro").trim();
+const CONFIGURED_MODEL = process.env.GEMINI_MODEL?.trim();
+const CONFIGURED_FALLBACKS = process.env.GEMINI_FALLBACK_MODELS
+  ? process.env.GEMINI_FALLBACK_MODELS.split(",")
+      .map((m) => m.trim())
+      .filter(Boolean)
+  : [];
+const TEMPERATURE = parseFloat(process.env.GEMINI_TEMPERATURE || "0.7");
+const MAX_OUTPUT_TOKENS = parseInt(process.env.GEMINI_MAX_TOKENS || "300", 10);
 
-// Initialize the Google Gen AI client
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+// Default high-speed candidates prioritized by latency and availability
+const FAST_CANDIDATE_MODELS = [
+  "gemini-3.5-flash-lite",
+  "gemini-flash-lite-latest",
+  "gemini-3.5-flash",
+  "gemini-flash-latest",
+  "gemini-3.8-flash",
+  "gemini-3.6-flash",
+  "gemini-3.1-flash-lite",
+];
 
-async function callGemini(prompt: string) {
-  if (!GEMINI_API_KEY) {
-    throw new Error("Missing GEMINI_API_KEY environment variable.");
+// Initialize the Google Gen AI client once
+const ai = GEMINI_API_KEY ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : null;
+
+// In-memory cache for the validated active working model to ensure 0ms fallback penalty
+let activeWorkingModel: string | null = null;
+
+function getModelCandidates(): string[] {
+  const list: string[] = [];
+
+  // Priority 1: Configured model from environment variable
+  if (CONFIGURED_MODEL && !list.includes(CONFIGURED_MODEL)) {
+    list.push(CONFIGURED_MODEL);
   }
 
-  // Attempt using the configured model first, and fallback if needed
-  const models = [
-    GEMINI_MODEL,
-    "gemini-3.6-flash",
-    "gemini-3.5-flash-lite",
-    "gemini-flash-latest",
-    "gemini-2.5-pro",
-    "gemini-2.5-flash",
-    "gemini-2.0-flash",
-  ];
+  // Priority 2: Previously confirmed working model
+  if (activeWorkingModel && !list.includes(activeWorkingModel)) {
+    list.push(activeWorkingModel);
+  }
 
-  const uniqueModels = Array.from(new Set(models));
-  let lastError: any = null;
-
-  for (const model of uniqueModels) {
-    try {
-      const response = await ai.models.generateContent({
-        model: model,
-        contents: prompt,
-      });
-
-      if (response.text) {
-        return response.text.trim();
-      }
-    } catch (err: any) {
-      console.warn(`Failed to call Gemini model ${model}:`, err.message || err);
-      lastError = err;
+  // Priority 3: Fallback models configured in environment
+  for (const model of CONFIGURED_FALLBACKS) {
+    if (!list.includes(model)) {
+      list.push(model);
     }
   }
 
-  throw lastError || new Error("Failed to generate content from any Gemini model.");
+  // Priority 4: Fast defaults pool
+  for (const model of FAST_CANDIDATE_MODELS) {
+    if (!list.includes(model)) {
+      list.push(model);
+    }
+  }
+
+  return list;
 }
 
 // List of pattern matches for inappropriate or profane words.
@@ -85,8 +95,8 @@ const INAPPROPRIATE_PATTERNS = [
   /\w*vagina\w*/i,                // vagina, vaginas
   /\w*penis\w*/i,                 // penis, penises
   /\w*masturbat\w*/i,             // masturbate, masturbation
-  /\w*baowala\w*/i,             // masturbate, masturbation
-  /\w*blowjob\w*/i                // blowjob, blowjobs
+  /\w*baowala\w*/i,               // inappropriate terms
+  /\w*blowjob\w*/i,               // blowjob, blowjobs
 ];
 
 function containsInappropriate(text: string): boolean {
@@ -121,6 +131,16 @@ function buildLocalAnswer(question: string, contactContext?: string) {
   return `Thanks for reaching out! I'm Danish's AI assistant. Feel free to ask me anything about his full stack development background, enterprise projects at 7 Kings Code, technical skills, or contact info. How can I help you today? 😊`;
 }
 
+function createTextStreamResponse(text: string, modelName = "local") {
+  return new Response(text, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      "X-Assistant-Model": modelName,
+    },
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const { question, history } = await req.json();
@@ -134,43 +154,92 @@ export async function POST(req: Request) {
         "Please keep the conversation professional and respectful.",
         "I can help with Danish's work and portfolio. Let's keep it focused on that.",
         "I’m here to answer questions about Danish's skills, experience, or projects.",
-        "Let’s stay on topic and keep things professional."
+        "Let’s stay on topic and keep things professional.",
       ];
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-      return NextResponse.json({ answer: randomResponse });
+      return createTextStreamResponse(randomResponse, "moderation");
     }
 
-    const relevantChunks = findRelevantChunks(question);
-
-    const [projects, skills, experience, contact] = await Promise.all([
-      getLiveProjectsContext(),
-      getLiveSkillsContext(),
-      getLiveExperienceContext(),
-      getLiveContactContext(),
+    // Fast cached context retrieval (5-minute TTL to avoid continuous Firestore network roundtrips)
+    const [relevantChunks, liveContexts] = await Promise.all([
+      findRelevantChunks(question),
+      getAllLiveContexts(),
     ]);
 
     const prompt = buildAssistantPrompt(
       question,
       relevantChunks.length ? relevantChunks : knowledgeChunks,
-      { projects, skills, experience, contact },
+      liveContexts,
       Array.isArray(history) ? history : undefined
     );
 
-    if (!GEMINI_API_KEY) {
-      return NextResponse.json({ answer: buildLocalAnswer(question, contact) });
+    if (!GEMINI_API_KEY || !ai) {
+      return createTextStreamResponse(buildLocalAnswer(question, liveContexts.contact), "local-fallback");
     }
 
-    try {
-      const answer = await callGemini(prompt);
-      return NextResponse.json({ answer: shortenAssistantReply(answer) });
-    } catch (error) {
-      console.warn("Gemini fallback triggered:", error);
-      return NextResponse.json({ answer: buildLocalAnswer(question, contact) });
+    // Attempt streaming with dynamic candidates
+    const candidates = getModelCandidates();
+    let streamResult: any = null;
+    let successfulModel = "";
+    let lastError: any = null;
+
+    for (const model of candidates) {
+      try {
+        streamResult = await ai.models.generateContentStream({
+          model: model,
+          contents: prompt,
+          config: {
+            temperature: TEMPERATURE,
+            maxOutputTokens: MAX_OUTPUT_TOKENS,
+          },
+        });
+
+        successfulModel = model;
+        activeWorkingModel = model;
+        break;
+      } catch (err: any) {
+        console.warn(`[Gemini] Model '${model}' failed, attempting fallback:`, err?.message || err);
+        lastError = err;
+        if (activeWorkingModel === model) {
+          activeWorkingModel = null;
+        }
+      }
     }
+
+    if (!streamResult) {
+      console.warn("All Gemini models failed or exhausted. Falling back to local assistant:", lastError);
+      return createTextStreamResponse(buildLocalAnswer(question, liveContexts.contact), "local-fallback");
+    }
+
+    // Return real-time streaming response
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of streamResult) {
+            if (chunk.text) {
+              controller.enqueue(encoder.encode(chunk.text));
+            }
+          }
+        } catch (streamError) {
+          console.error("Stream reading error:", streamError);
+          controller.error(streamError);
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        "X-Assistant-Model": successfulModel,
+      },
+    });
   } catch (error) {
     console.error("Assistant API error:", error);
-    const message =
-      error instanceof Error ? error.message : "Assistant request failed.";
+    const message = error instanceof Error ? error.message : "Assistant request failed.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

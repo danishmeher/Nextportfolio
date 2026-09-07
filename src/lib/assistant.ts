@@ -130,6 +130,51 @@ export async function getLiveContactContext(): Promise<string> {
   }
 }
 
+interface CachedContext {
+  projects: string;
+  skills: string;
+  experience: string;
+  contact: string;
+  timestamp: number;
+}
+
+let memoryContextCache: CachedContext | null = null;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes cache
+
+export async function getAllLiveContexts(): Promise<{
+  projects: string;
+  skills: string;
+  experience: string;
+  contact: string;
+}> {
+  const now = Date.now();
+  if (memoryContextCache && now - memoryContextCache.timestamp < CACHE_TTL_MS) {
+    return {
+      projects: memoryContextCache.projects,
+      skills: memoryContextCache.skills,
+      experience: memoryContextCache.experience,
+      contact: memoryContextCache.contact,
+    };
+  }
+
+  const [projects, skills, experience, contact] = await Promise.all([
+    getLiveProjectsContext(),
+    getLiveSkillsContext(),
+    getLiveExperienceContext(),
+    getLiveContactContext(),
+  ]);
+
+  memoryContextCache = {
+    projects,
+    skills,
+    experience,
+    contact,
+    timestamp: now,
+  };
+
+  return { projects, skills, experience, contact };
+}
+
 function normalizeText(text: string) {
   return text.toLowerCase();
 }
