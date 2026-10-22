@@ -3,15 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Briefcase } from "lucide-react";
-import {
-  collection,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-  writeBatch,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { getClientPortfolioData } from "@/lib/portfolio-client";
+
 
 type ExperienceItem = {
   id?: string;
@@ -55,29 +48,7 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-async function seedExperiencesToFirestore(exps: ExperienceItem[] = fallbackExperiences) {
-  const batch = writeBatch(db);
 
-  exps.forEach((exp, idx) => {
-    const id = slugify(`${exp.company}-${exp.role}`);
-    const ref = doc(db, "experiences", id);
-    batch.set(
-      ref,
-      {
-        role: exp.role,
-        company: exp.company,
-        period: exp.period,
-        description: exp.description,
-        tags: exp.tags,
-        current: exp.current,
-        order: exp.order ?? idx + 1,
-      },
-      { merge: true }
-    );
-  });
-
-  await batch.commit();
-}
 
 const slideUp = {
   hidden: { opacity: 0, y: 40 },
@@ -95,61 +66,16 @@ export default function Experience() {
   const [exps, setExps] = useState<ExperienceItem[]>(fallbackExperiences);
 
   useEffect(() => {
-    let seeded = false;
-
-    const q = query(collection(db, "experiences"), orderBy("order", "asc"));
-
-    const unsubscribe = onSnapshot(
-      q,
-      async (snapshot) => {
-        const currentIds = new Set(snapshot.docs.map((d) => d.id));
-        const missing = fallbackExperiences.filter(
-          (e) => !currentIds.has(slugify(`${e.company}-${e.role}`))
-        );
-
-        if (missing.length > 0) {
-          setExps(fallbackExperiences);
-
-          if (!seeded) {
-            seeded = true;
-            try {
-              await seedExperiencesToFirestore(missing);
-            } catch (err) {
-              console.error("Failed to seed experiences:", err);
-            }
-          }
-
-          return;
-        }
-
-        if (snapshot.empty) {
-          setExps(fallbackExperiences);
-          return;
-        }
-
-        const firebaseExps: ExperienceItem[] = snapshot.docs.map((d) => {
-          const data = d.data();
-          return {
-            id: d.id,
-            role: data.role || "",
-            company: data.company || "",
-            period: data.period || "",
-            description: data.description || "",
-            tags: Array.isArray(data.tags) ? data.tags : [],
-            current: Boolean(data.current),
-            order: data.order ?? 999,
-          };
-        });
-
-        setExps(firebaseExps);
-      },
-      (error) => {
-        console.error("Firebase fetch failed, using fallback experiences:", error);
-        setExps(fallbackExperiences);
+    let isMounted = true;
+    getClientPortfolioData().then((data) => {
+      if (isMounted && Array.isArray(data?.experiences) && data.experiences.length > 0) {
+        setExps(data.experiences);
       }
-    );
+    });
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (

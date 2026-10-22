@@ -276,7 +276,7 @@ export default function ChatAssistant() {
             <div className="flex items-center justify-between border-b border-indigo-500/20 bg-gradient-to-r from-slate-950 via-indigo-950/40 to-slate-950 px-4 py-3">
               <div className="flex items-center gap-3">
                 <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl overflow-hidden border border-indigo-400/50 shadow-md">
-                  <img src="/Ai Profile.png" alt="AI Assistant" className="h-full w-full object-cover" />
+                  <img src="/ai-profile.webp" alt="AI Assistant" className="h-full w-full object-cover" />
                   <span className="absolute top-0.5 right-0.5 flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 border border-slate-950"></span>
@@ -314,7 +314,7 @@ export default function ChatAssistant() {
                   >
                     {isAssistant && (
                       <div className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full overflow-hidden border border-indigo-400/50 shadow-sm mt-0.5">
-                        <img src="/Ai Profile.png" alt="AI Assistant" className="h-full w-full object-cover" />
+                        <img src="/ai-profile.webp" alt="AI Assistant" className="h-full w-full object-cover" />
                       </div>
                     )}
                     <div
@@ -347,7 +347,7 @@ export default function ChatAssistant() {
               {loading && (
                 <div className="flex items-center gap-2 justify-start">
                   <div className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full overflow-hidden border border-indigo-400/50 shadow-sm">
-                    <img src="/Ai Profile.png" alt="AI Assistant" className="h-full w-full object-cover" />
+                    <img src="/ai-profile.webp" alt="AI Assistant" className="h-full w-full object-cover" />
                   </div>
                   <div className="rounded-2xl bg-slate-900 border border-indigo-500/20 px-3 py-1.5">
                     <TypingIndicator />
@@ -416,7 +416,7 @@ export default function ChatAssistant() {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
         </span>
-        <img src="/Ai Profile.png" alt="AI" className="h-6 w-6 rounded-full object-cover border border-cyan-300/50 shadow-sm" />
+        <img src="/ai-profile.webp" alt="AI" className="h-6 w-6 rounded-full object-cover border border-cyan-300/50 shadow-sm" />
         <span>{open ? "Close Assistant" : "Ask Danish AI"}</span>
       </motion.button>
     </div>

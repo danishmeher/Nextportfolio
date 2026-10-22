@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
-import { AuthProvider } from "@/lib/auth-context";
 import { ThemeProvider } from "@/lib/theme-context";
 
 const inter = Inter({
@@ -33,20 +32,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`scroll-smooth dark ${inter.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`scroll-smooth dark ${inter.variable}`}>
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        <link rel="preconnect" href="https://firestore.googleapis.com" />
         <link rel="preload" href="/DanishImage.webp" as="image" type="image/webp" fetchPriority="high" />
       </head>
-      <body className="bg-slate-950 text-slate-100 antialiased selection:bg-indigo-500 selection:text-white transition-colors duration-300">
-        <AuthProvider>
-          <ThemeProvider>
-            {children}
-            <Toaster richColors position="top-right" />
-          </ThemeProvider>
-        </AuthProvider>
+      <body
+        suppressHydrationWarning
+        className="bg-slate-950 text-slate-100 antialiased selection:bg-indigo-500 selection:text-white transition-colors duration-300"
+      >
+        <ThemeProvider>
+          {children}
+          <Toaster richColors position="top-right" />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -156,7 +156,12 @@ export default function ParticleCanvas() {
       animationFrameId = requestAnimationFrame(render);
     };
 
-    render();
+    let idleTimer: ReturnType<typeof setTimeout> | number;
+    if ("requestIdleCallback" in window) {
+      idleTimer = (window as unknown as { requestIdleCallback: (cb: () => void) => number }).requestIdleCallback(() => render());
+    } else {
+      idleTimer = setTimeout(() => render(), 300);
+    }
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -166,6 +171,11 @@ export default function ParticleCanvas() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       observer.disconnect();
       cancelAnimationFrame(animationFrameId);
+      if ("cancelIdleCallback" in window && typeof idleTimer === "number") {
+        (window as unknown as { cancelIdleCallback: (id: number) => void }).cancelIdleCallback(idleTimer);
+      } else {
+        clearTimeout(idleTimer as ReturnType<typeof setTimeout>);
+      }
     };
   }, []);
 

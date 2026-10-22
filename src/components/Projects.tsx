@@ -4,16 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Sparkles } from "lucide-react";
-import {
-  collection,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-  writeBatch,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import TiltCard from "./TiltCard";
+import { getClientPortfolioData } from "@/lib/portfolio-client";
 
 type Project = {
   id?: string;
@@ -77,33 +69,6 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-async function seedProjectsToFirestore(projectsToSeed: Project[] = fallbackProjects) {
-  const batch = writeBatch(db);
-
-  projectsToSeed.forEach((project, index) => {
-    const docId = slugify(project.title);
-    const ref = doc(db, "projects", docId);
-
-    batch.set(
-      ref,
-      {
-        title: project.title,
-        company: project.company,
-        description: project.description,
-        tags: project.tags,
-        color: project.color,
-        icon: project.icon,
-        imageUrl: project.imageUrl,
-        link: project.link,
-        featured: project.featured,
-        order: project.order ?? index + 1,
-      },
-      { merge: true }
-    );
-  });
-
-  await batch.commit();
-}
 
 function ProjectCard({
   project,
@@ -222,57 +187,16 @@ export default function Projects() {
   const filterCategories = ["All", "Sitecore & Enterprise", "React & Next.js"];
 
   useEffect(() => {
-    let seeded = false;
-    const q = query(collection(db, "projects"), orderBy("order", "asc"));
-
-    const unsubscribe = onSnapshot(
-      q,
-      async (snapshot) => {
-        const currentIds = new Set(snapshot.docs.map((doc) => doc.id));
-        const missingProjects = fallbackProjects.filter(
-          (project) => !currentIds.has(slugify(project.title))
-        );
-
-        if (missingProjects.length > 0) {
-          setProjects(fallbackProjects);
-
-          if (!seeded) {
-            seeded = true;
-            try {
-              await seedProjectsToFirestore(missingProjects);
-            } catch (error) {
-              console.error("Failed to seed missing projects:", error);
-            }
-          }
-          return;
-        }
-
-        const firebaseProjects: Project[] = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            title: data.title || "",
-            description: data.description || "",
-            company: data.company || "",
-            tags: Array.isArray(data.tags) ? data.tags : [],
-            color: data.color || "from-indigo-600 to-cyan-500",
-            icon: typeof data.icon === "string" ? data.icon : undefined,
-            imageUrl: typeof data.imageUrl === "string" ? data.imageUrl : undefined,
-            link: typeof data.link === "string" ? data.link : undefined,
-            featured: Boolean(data.featured),
-            order: data.order ?? 999,
-          };
-        });
-
-        setProjects(firebaseProjects);
-      },
-      (error) => {
-        console.error("Firebase fetch failed, using fallback projects:", error);
-        setProjects(fallbackProjects);
+    let isMounted = true;
+    getClientPortfolioData().then((data) => {
+      if (isMounted && Array.isArray(data?.projects) && data.projects.length > 0) {
+        setProjects(data.projects);
       }
-    );
+    });
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const filteredProjects = projects.filter((project) => {

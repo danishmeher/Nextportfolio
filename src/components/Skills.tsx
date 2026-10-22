@@ -2,16 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import {
-  collection,
-  doc,
-  onSnapshot,
-  query,
-  writeBatch,
-} from "firebase/firestore";
-
 import SectionDivider from "./SectionDivider";
-import { db } from "@/lib/firebase";
+import { getClientPortfolioData } from "@/lib/portfolio-client";
 
 type Skill = {
   id?: string;
@@ -92,17 +84,6 @@ function slugify(text: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-async function seedSkillsToFirebase(skillsToSeed: Skill[] = fallbackSkills) {
-  const batch = writeBatch(db);
-
-  skillsToSeed.forEach((skill) => {
-    const docId = slugify(skill.name);
-    const ref = doc(db, "skills", docId);
-    batch.set(ref, skill);
-  });
-
-  await batch.commit();
-}
 
 function SkillCard({
   category,
@@ -172,47 +153,16 @@ export default function Skills() {
   const [skills, setSkills] = useState<Skill[]>(fallbackSkills);
 
   useEffect(() => {
-    let seeded = false;
-
-    const q = query(collection(db, "skills"));
-
-    const unsubscribe = onSnapshot(
-      q,
-      async (snapshot) => {
-        const firebaseSkills: Skill[] = snapshot.docs.map(
-          (doc) => ({ id: doc.id, ...doc.data() } as Skill)
-        );
-
-        const existingNames = new Set(
-          firebaseSkills.map((skill) => skill.name.toLowerCase())
-        );
-        const missingSkills = fallbackSkills.filter(
-          (skill) => !existingNames.has(skill.name.toLowerCase())
-        );
-
-        if (missingSkills.length > 0 && !seeded) {
-          seeded = true;
-          try {
-            await seedSkillsToFirebase(missingSkills);
-          } catch (error) {
-            console.error("Failed to seed Firebase skills:", error);
-          }
-        }
-
-        if (snapshot.empty) {
-          setSkills(fallbackSkills);
-          return;
-        }
-
-        setSkills(firebaseSkills);
-      },
-      (error) => {
-        console.error("Firebase fetch failed, using fallback skills:", error);
-        setSkills(fallbackSkills);
+    let isMounted = true;
+    getClientPortfolioData().then((data) => {
+      if (isMounted && Array.isArray(data?.skills) && data.skills.length > 0) {
+        setSkills(data.skills);
       }
-    );
+    });
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (

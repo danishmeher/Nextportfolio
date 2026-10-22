@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowDown, Mail, Sparkles, Code2, Zap } from "lucide-react";
-import { motion } from "framer-motion";
+import { ArrowDown, Mail, Sparkles } from "lucide-react";
 import ParticleCanvas from "./ParticleCanvas";
 
 function GithubIcon({ size = 20 }: { size?: number }) {
@@ -21,23 +20,6 @@ function LinkedinIcon({ size = 20 }: { size?: number }) {
   );
 }
 
-const container = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.12, delayChildren: 0.1 },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 35 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const },
-  },
-};
-
 export default function Hero() {
   return (
     <section
@@ -53,13 +35,9 @@ export default function Hero() {
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 w-full">
         <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: Text content */}
-          <motion.div
-            variants={container}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.div variants={item}>
+          {/* Left: Text content - Native elements for instant sub-500ms LCP paint without hydration mutation */}
+          <div>
+            <div>
               <div className="inline-flex items-center gap-2.5 rounded-full border border-indigo-500/40 bg-indigo-500/10 px-4 py-2 text-xs font-bold text-indigo-400 backdrop-blur-xl mb-6 shadow-lg shadow-indigo-500/10 animate-shimmer">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -67,124 +45,82 @@ export default function Hero() {
                 </span>
                 <span>Available for projects & full-time roles</span>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.h1
-              variants={item}
-              className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[var(--text-main)] leading-[1.1]"
-            >
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[var(--text-main)] leading-[1.1]">
               Hi, I&apos;m{" "}
               <span className="gradient-text drop-shadow-sm">Danish</span>
-            </motion.h1>
+            </h1>
 
-            <motion.div variants={item} className="mt-4 flex items-center gap-2 text-indigo-400 font-bold text-lg">
+            <div className="mt-4 flex items-center gap-2 text-indigo-400 font-bold text-lg">
               <Sparkles size={20} className="animate-spin text-cyan-400" style={{ animationDuration: "8s" }} />
               <span>Full Stack Developer & Sitecore XM Cloud Engineer</span>
-            </motion.div>
+            </div>
 
-            <motion.p
-              variants={item}
-              className="mt-5 text-base lg:text-lg font-normal text-[var(--text-muted)] max-w-lg leading-relaxed"
-            >
+            <p className="mt-5 text-base lg:text-lg font-normal text-[var(--text-muted)] max-w-lg leading-relaxed">
               Building high-concurrency, scalable frontend & backend platforms at{" "}
               <span className="font-bold text-[var(--text-main)]">7 Kings Code</span>.
               Specializing in <span className="font-semibold text-indigo-400">React</span>,{" "}
               <span className="font-semibold text-indigo-400">Next.js</span>, and{" "}
               <span className="font-semibold text-indigo-400">Sitecore XM Cloud</span> integrations.
-            </motion.p>
+            </p>
 
-            <motion.div
-              variants={item}
-              className="mt-8 flex flex-wrap items-center gap-4"
-            >
-              <motion.a
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <a
                 href="#projects"
-                whileHover={{ scale: 1.06, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                className="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 px-8 py-4 text-sm font-bold text-white shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-300"
+                className="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 px-8 py-4 text-sm font-bold text-white shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105 active:scale-95 transition-all duration-300"
               >
                 View Selected Work
                 <ArrowDown size={18} />
-              </motion.a>
+              </a>
 
-              <motion.a
+              <a
                 href="#contact"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-7 py-4 text-sm font-bold text-[var(--text-main)] hover:border-indigo-500 hover:text-indigo-400 transition-all duration-300 shadow-sm backdrop-blur-md"
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-7 py-4 text-sm font-bold text-[var(--text-main)] hover:border-indigo-500 hover:text-indigo-400 hover:scale-105 active:scale-95 transition-all duration-300 shadow-sm backdrop-blur-md"
               >
                 Get In Touch
-              </motion.a>
-            </motion.div>
+              </a>
+            </div>
 
-            <motion.div
-              variants={item}
-              className="mt-10 flex items-center gap-4"
-            >
-              <motion.a
-                whileHover={{ scale: 1.15, rotate: 5 }}
+            <div className="mt-10 flex items-center gap-4">
+              <a
                 href="https://github.com/danishmeher"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:border-indigo-500 hover:text-indigo-400 transition-all duration-300 shadow-md"
+                className="flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:border-indigo-500 hover:text-indigo-400 hover:scale-110 active:scale-95 transition-all duration-300 shadow-md"
                 aria-label="GitHub"
               >
                 <GithubIcon size={20} />
-              </motion.a>
+              </a>
 
-              <motion.a
-                whileHover={{ scale: 1.15, rotate: -5 }}
+              <a
                 href="https://www.linkedin.com/in/danishriazdani/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:border-indigo-500 hover:text-indigo-400 transition-all duration-300 shadow-md"
+                className="flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:border-indigo-500 hover:text-indigo-400 hover:scale-110 active:scale-95 transition-all duration-300 shadow-md"
                 aria-label="LinkedIn"
               >
                 <LinkedinIcon size={20} />
-              </motion.a>
+              </a>
 
-              <motion.a
-                whileHover={{ scale: 1.15, rotate: 5 }}
+              <a
                 href="mailto:danish.daniriaz@gmail.com"
-                className="flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:border-indigo-500 hover:text-indigo-400 transition-all duration-300 shadow-md"
+                className="flex items-center justify-center w-11 h-11 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:border-indigo-500 hover:text-indigo-400 hover:scale-110 active:scale-95 transition-all duration-300 shadow-md"
                 aria-label="Email"
               >
                 <Mail size={20} />
-              </motion.a>
-            </motion.div>
-          </motion.div>
+              </a>
+            </div>
+          </div>
 
-          {/* Right: Floating Avatar frame with rotating neon ring & floating badge physics */}
-          <motion.div
-            className="flex justify-center md:justify-end relative"
-            initial={{ opacity: 0, scale: 0.8, x: 60 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            transition={{
-              duration: 0.8,
-              delay: 0.1,
-              ease: [0.16, 1, 0.3, 1] as const,
-            }}
-          >
+          {/* Right: Floating Avatar frame with GPU-composited rotating neon rings */}
+          <div className="flex justify-center md:justify-end relative">
             <div className="relative">
-              {/* Spinning gradient ring background */}
-              <motion.div
-                className="absolute -inset-6 rounded-full bg-gradient-to-tr from-indigo-600 via-cyan-400 to-emerald-400 opacity-60 blur-xl md:blur-2xl will-change-transform"
-                animate={{
-                  rotate: [0, 360],
-                  scale: [1, 1.05, 1],
-                }}
-                transition={{
-                  rotate: { duration: 18, repeat: Infinity, ease: "linear" },
-                  scale: { duration: 5, repeat: Infinity, ease: "easeInOut" },
-                }}
-              />
+              {/* Spinning gradient ring background - 100% GPU-composited CSS */}
+              <div className="absolute -inset-6 rounded-full bg-gradient-to-tr from-indigo-600 via-cyan-400 to-emerald-400 opacity-60 blur-xl md:blur-2xl animate-spin-slow pointer-events-none will-change-transform" />
 
-              {/* Outer rotating neon dashed ring */}
-              <motion.div
-                className="absolute -inset-3 rounded-full border-2 border-dashed border-cyan-400/40 pointer-events-none will-change-transform"
-                animate={{ rotate: [360, 0] }}
-                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-              />
+              {/* Outer rotating neon dashed ring - 100% GPU-composited CSS */}
+              <div className="absolute -inset-3 rounded-full border-2 border-dashed border-cyan-400/40 pointer-events-none animate-spin-reverse-slow will-change-transform" />
 
               {/* Main Avatar container */}
               <div className="relative w-[260px] sm:w-[320px] md:w-[380px] lg:w-[420px] rounded-full bg-gradient-to-br from-indigo-500 via-cyan-400 to-emerald-400 p-1.5 shadow-2xl mx-auto">
@@ -203,31 +139,18 @@ export default function Hero() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1 }}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[var(--text-muted)]"
-        >
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[var(--text-muted)]">
           <span className="text-[10px] font-bold tracking-widest uppercase text-indigo-400">
             Scroll Down
           </span>
-          <motion.div
-            className="w-5 h-8 rounded-full border border-indigo-500/40 flex items-start justify-center p-1 bg-indigo-500/10"
-            animate={{ y: [0, 6, 0] }}
-            transition={{
-              duration: 1.8,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            <div className="w-1.5 h-2 rounded-full bg-indigo-400" />
-          </motion.div>
-        </motion.div>
+          <div className="w-5 h-8 rounded-full border border-indigo-500/40 flex items-start justify-center p-1 bg-indigo-500/10">
+            <div className="w-1.5 h-2 rounded-full bg-indigo-400 animate-bounce" />
+          </div>
+        </div>
       </div>
     </section>
   );

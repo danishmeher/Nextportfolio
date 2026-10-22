@@ -111,21 +111,44 @@ body {
   background-clip: text;
 }
 
-/* Gradient shimmer animation for borders & badges */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+/* GPU-composited shimmer animation for badges (using transform instead of background-position) */
+@keyframes shimmer-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 .animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: linear-gradient(
     90deg,
-    rgba(99, 102, 241, 0.1) 0%,
-    rgba(34, 211, 238, 0.4) 50%,
-    rgba(99, 102, 241, 0.1) 100%
+    transparent 0%,
+    rgba(99, 102, 241, 0.25) 50%,
+    transparent 100%
   );
-  background-size: 200% 100%;
-  animation: shimmer 3s infinite linear;
+  transform: translateX(-100%);
+  animation: shimmer-slide 3s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+/* GPU-composited spinning utilities for Hero rings */
+@keyframes spin-reverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+.animate-spin-slow {
+  animation: spin 18s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: spin-reverse 30s linear infinite;
 }
 
 /* Blob animation */
