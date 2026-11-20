@@ -15,7 +15,7 @@ function TypingIndicator() {
     <div className="flex items-center gap-1.5 py-1 px-2" aria-label="AI Thinking">
       <span className="h-2 w-2 rounded-full bg-indigo-400 animate-bounce [animation-delay:-0.3s]" />
       <span className="h-2 w-2 rounded-full bg-cyan-400 animate-bounce [animation-delay:-0.15s]" />
-      <span className="h-2 w-2 rounded-full bg-emerald-400 animate-bounce" />
+      <span className="h-2 w-2 rounded-full bg-indigo-300 animate-bounce" />
     </div>
   );
 }
@@ -87,7 +87,7 @@ export default function ChatAssistant() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      text: "👋 Hi! I'm Danish's AI Assistant. How can I help you today?",
+      text: "Hey! Glad you stopped by. Feel free to ask me anything about Danish's work, tech stack, or projects.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -214,29 +214,39 @@ export default function ChatAssistant() {
       }
 
       const decoder = new TextDecoder();
-      let accumulated = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         const chunk = decoder.decode(value, { stream: true });
         if (chunk) {
-          accumulated += chunk;
           setLoading(false); // First token arrived, dismiss thinking indicator immediately
           setMessages((current) =>
             current.map((message, index) =>
-              index === assistantIndex ? { ...message, text: accumulated, streaming: true } : message
+              index === assistantIndex
+                ? { ...message, text: (message.text || "") + chunk, streaming: true }
+                : message
             )
           );
         }
       }
 
-      accumulated += decoder.decode();
-      setMessages((current) =>
-        current.map((message, index) =>
-          index === assistantIndex ? { ...message, text: accumulated, streaming: false } : message
-        )
-      );
+      const remaining = decoder.decode();
+      if (remaining) {
+        setMessages((current) =>
+          current.map((message, index) =>
+            index === assistantIndex
+              ? { ...message, text: (message.text || "") + remaining, streaming: false }
+              : message
+          )
+        );
+      } else {
+        setMessages((current) =>
+          current.map((message, index) =>
+            index === assistantIndex ? { ...message, streaming: false } : message
+          )
+        );
+      }
       setLoading(false);
     } catch (error) {
       console.error("Assistant fetch error:", error);
@@ -277,10 +287,6 @@ export default function ChatAssistant() {
               <div className="flex items-center gap-3">
                 <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl overflow-hidden border border-indigo-400/50 shadow-md">
                   <img src="/ai-profile.webp" alt="AI Assistant" className="h-full w-full object-cover" />
-                  <span className="absolute top-0.5 right-0.5 flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 border border-slate-950"></span>
-                  </span>
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-white flex items-center gap-1">
@@ -412,10 +418,6 @@ export default function ChatAssistant() {
         onClick={() => setOpen((current) => !current)}
         aria-label="Toggle AI Assistant"
       >
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
-        </span>
         <img src="/ai-profile.webp" alt="AI" className="h-6 w-6 rounded-full object-cover border border-cyan-300/50 shadow-sm" />
         <span>{open ? "Close Assistant" : "Ask Danish AI"}</span>
       </motion.button>

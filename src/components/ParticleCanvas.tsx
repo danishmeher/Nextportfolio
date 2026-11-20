@@ -70,7 +70,7 @@ export default function ParticleCanvas() {
       alpha: number;
     }> = [];
 
-    const colors = ["#818CF8", "#38BDF8", "#34D399", "#C084FC"];
+    const colors = ["#818CF8", "#38BDF8", "#06B6D4", "#C084FC"];
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({

@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { ArrowDown, Mail, Sparkles } from "lucide-react";
-import ParticleCanvas from "./ParticleCanvas";
 
 function GithubIcon({ size = 20 }: { size?: number }) {
   return (
@@ -26,26 +25,15 @@ export default function Hero() {
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
     >
-      {/* 60fps Particle canvas background */}
-      <ParticleCanvas />
-
-      {/* Ambient background glow colors */}
-      <div className="absolute top-1/4 -left-32 w-72 sm:w-96 h-72 sm:h-96 bg-indigo-600/25 rounded-full blur-3xl md:blur-[120px] opacity-80 animate-blob pointer-events-none will-change-transform" />
-      <div className="absolute top-1/3 -right-32 w-72 sm:w-96 h-72 sm:h-96 bg-cyan-500/25 rounded-full blur-3xl md:blur-[120px] opacity-80 animate-blob animation-delay-2000 pointer-events-none will-change-transform" />
+      {/* Static soft ambient glow (0% GPU animation overhead) */}
+      <div className="absolute top-1/4 -left-32 w-72 sm:w-96 h-72 sm:h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 -right-32 w-72 sm:w-96 h-72 sm:h-96 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 w-full">
         <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left: Text content - Native elements for instant sub-500ms LCP paint without hydration mutation */}
           <div>
-            <div>
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-indigo-500/40 bg-indigo-500/10 px-4 py-2 text-xs font-bold text-indigo-400 backdrop-blur-xl mb-6 shadow-lg shadow-indigo-500/10 animate-shimmer">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
-                </span>
-                <span>Available for projects & full-time roles</span>
-              </div>
-            </div>
+
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[var(--text-main)] leading-[1.1]">
               Hi, I&apos;m{" "}
@@ -117,13 +105,13 @@ export default function Hero() {
           <div className="flex justify-center md:justify-end relative">
             <div className="relative">
               {/* Spinning gradient ring background - 100% GPU-composited CSS */}
-              <div className="absolute -inset-6 rounded-full bg-gradient-to-tr from-indigo-600 via-cyan-400 to-emerald-400 opacity-60 blur-xl md:blur-2xl animate-spin-slow pointer-events-none will-change-transform" />
+              <div className="absolute -inset-6 rounded-full bg-gradient-to-tr from-indigo-600 via-cyan-400 to-indigo-500 opacity-60 blur-xl md:blur-2xl animate-spin-slow pointer-events-none will-change-transform" />
 
               {/* Outer rotating neon dashed ring - 100% GPU-composited CSS */}
               <div className="absolute -inset-3 rounded-full border-2 border-dashed border-cyan-400/40 pointer-events-none animate-spin-reverse-slow will-change-transform" />
 
               {/* Main Avatar container */}
-              <div className="relative w-[260px] sm:w-[320px] md:w-[380px] lg:w-[420px] rounded-full bg-gradient-to-br from-indigo-500 via-cyan-400 to-emerald-400 p-1.5 shadow-2xl mx-auto">
+              <div className="relative w-[260px] sm:w-[320px] md:w-[380px] lg:w-[420px] rounded-full bg-gradient-to-br from-indigo-500 via-cyan-400 to-indigo-600 p-1.5 shadow-2xl mx-auto">
                 <div className="relative rounded-full overflow-hidden bg-slate-950 p-1 aspect-square">
                   <Image
                     src="/DanishImage.webp"
@@ -142,15 +130,6 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[var(--text-muted)]">
-          <span className="text-[10px] font-bold tracking-widest uppercase text-indigo-400">
-            Scroll Down
-          </span>
-          <div className="w-5 h-8 rounded-full border border-indigo-500/40 flex items-start justify-center p-1 bg-indigo-500/10">
-            <div className="w-1.5 h-2 rounded-full bg-indigo-400 animate-bounce" />
-          </div>
-        </div>
       </div>
     </section>
   );

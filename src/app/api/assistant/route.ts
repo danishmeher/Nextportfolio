@@ -2,9 +2,9 @@ import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 import {
   buildAssistantPrompt,
-  findRelevantChunks,
+  buildAssistantSystemInstruction,
+  formatConversationContents,
   getAllLiveContexts,
-  knowledgeChunks,
 } from "@/lib/assistant";
 import { portfolioProfile } from "@/lib/site-content";
 
@@ -16,18 +16,19 @@ const CONFIGURED_FALLBACKS = process.env.GEMINI_FALLBACK_MODELS
       .map((m) => m.trim())
       .filter(Boolean)
   : [];
-const TEMPERATURE = parseFloat(process.env.GEMINI_TEMPERATURE || "0.7");
-const MAX_OUTPUT_TOKENS = parseInt(process.env.GEMINI_MAX_TOKENS || "300", 10);
+const TEMPERATURE = parseFloat(process.env.GEMINI_TEMPERATURE || "0.75");
+const MAX_OUTPUT_TOKENS = parseInt(process.env.GEMINI_MAX_TOKENS || "350", 10);
 
 // Default high-speed candidates prioritized by latency and availability
 const FAST_CANDIDATE_MODELS = [
-  "gemini-3.6-flash",
   "gemini-3.5-flash-lite",
-  "gemini-flash-lite-latest",
+  "gemini-3.6-flash",
   "gemini-3.5-flash",
   "gemini-flash-latest",
-  "gemini-3.8-flash",
+  "gemini-flash-lite-latest",
   "gemini-3.1-flash-lite",
+  "gemini-3.8-flash",
+  "gemini-2.5-pro",
 ];
 
 // Initialize the Google Gen AI client once
@@ -105,30 +106,46 @@ function containsInappropriate(text: string): boolean {
 
 function buildLocalAnswer(question: string, contactContext?: string) {
   const normalized = question.toLowerCase();
+  const isUrdu = /(kya|haal|kaise|kaisa|bhai|kon|karta|batao|salam|assalam|khelta|kaam|sunao)/i.test(normalized);
 
-  if (/(phone|number|call|contact|reach|email)/i.test(question)) {
+  if (/(phone|number|call|contact|reach|email|rabta)/i.test(normalized)) {
     const phoneMatch = contactContext?.match(/Phone:\s*(.+)/i);
     const emailMatch = contactContext?.match(/Email:\s*(.+)/i);
-
     const email = emailMatch?.[1] || portfolioProfile.email;
     const phone = phoneMatch?.[1] || portfolioProfile.phone;
 
-    return `You can easily reach Danish via email at **${email}** or by phone/WhatsApp at **${phone}**! 📩\n\nFeel free to send a message directly using the contact form at the bottom of the page!`;
+    if (isUrdu) {
+      return `Aap Danish se direct email (${email}) ya WhatsApp (${phone}) par contact kar sakte hain! Nichay page par contact form bhi available hai.`;
+    }
+    return `You can reach Danish directly via email at ${email} or on WhatsApp at ${phone}. Feel free to drop a message in the contact form below!`;
   }
 
-  if (normalized.includes("resume") || normalized.includes("cv")) {
-    return `You can view and download Danish's latest CV directly from the header navigation bar! 📄\n\nIt covers his extensive experience at 7 Kings Code, technical stack, and key projects.`;
+  if (/(resume|cv)/i.test(normalized)) {
+    if (isUrdu) {
+      return `Danish ka latest resume aap top navigation bar me diye gaye "Resume" button se easily download kar sakte hain!`;
+    }
+    return `You can view and download Danish's latest CV directly via the "Resume" button in the top navigation bar!`;
   }
 
-  if (normalized.includes("project") || normalized.includes("portfolio") || normalized.includes("work")) {
-    return `Danish has engineered several high-performance enterprise and full stack platforms — including **CWS Hygiene** and **CWS Workwear** at 7 Kings Code using React and Sitecore XM Cloud. 🚀\n\nCheck out the **Projects** section on this page to explore interactive demos and case studies!`;
+  if (/(project|portfolio|work|kaam)/i.test(normalized)) {
+    if (isUrdu) {
+      return `Danish ne 7 Kings Code me CWS Hygiene aur CWS Workwear jaise enterprise platforms banaye hain React, Next.js aur Sitecore XM Cloud use karke. Projects section me details dekh sakte hain!`;
+    }
+    return `Danish has engineered major platforms like CWS Hygiene and CWS Workwear at 7 Kings Code using React, Next.js, and Sitecore XM Cloud. Feel free to explore the Projects section above for full details!`;
   }
 
-  if (normalized.includes("skill") || normalized.includes("stack") || normalized.includes("tech")) {
-    return `Danish's core stack revolves around **React**, **Next.js**, **TypeScript**, **Node.js**, **Sitecore XM Cloud**, and **Tailwind CSS**. 💻\n\nHe specializes in building scalable frontend component libraries, REST APIs, and full stack web applications!`;
+  if (/(skill|stack|tech|technologies)/i.test(normalized)) {
+    if (isUrdu) {
+      return `Danish ka core tech stack React, Next.js, TypeScript, Node.js aur Sitecore XM Cloud hai, saath me Tailwind CSS aur modern web tooling.`;
+    }
+    return `Danish specializes in React, Next.js, TypeScript, Node.js, and Sitecore XM Cloud, focusing on scalable frontend systems and robust enterprise APIs.`;
   }
 
-  return `Thanks for reaching out! I'm Danish's AI assistant. Feel free to ask me anything about his full stack development background, enterprise projects at 7 Kings Code, technical skills, or contact info. How can I help you today? 😊`;
+  if (isUrdu) {
+    return `Assalam o Alaikum! Sab badhiya bhai, aap sunao? Danish ke kaam, enterprise projects ya skills ke baray me kuch poochna ho to batao.`;
+  }
+
+  return `Hey there! Feel free to ask me anything about Danish's work, tech stack, or recent enterprise projects. What's on your mind?`;
 }
 
 function createTextStreamResponse(text: string, modelName = "local") {
@@ -160,16 +177,11 @@ export async function POST(req: Request) {
       return createTextStreamResponse(randomResponse, "moderation");
     }
 
-    // Fast cached context retrieval (5-minute TTL to avoid continuous Firestore network roundtrips)
-    const [relevantChunks, liveContexts] = await Promise.all([
-      findRelevantChunks(question),
-      getAllLiveContexts(),
-    ]);
-
-    const prompt = buildAssistantPrompt(
+    // Fast cached live context retrieval (5-minute TTL to avoid continuous Firestore network roundtrips)
+    const liveContexts = await getAllLiveContexts();
+    const systemInstruction = buildAssistantSystemInstruction(liveContexts);
+    const contents = formatConversationContents(
       question,
-      relevantChunks.length ? relevantChunks : knowledgeChunks,
-      liveContexts,
       Array.isArray(history) ? history : undefined
     );
 
@@ -187,8 +199,9 @@ export async function POST(req: Request) {
       try {
         streamResult = await ai.models.generateContentStream({
           model: model,
-          contents: prompt,
+          contents: contents,
           config: {
+            systemInstruction: systemInstruction,
             temperature: TEMPERATURE,
             maxOutputTokens: MAX_OUTPUT_TOKENS,
           },
@@ -198,10 +211,31 @@ export async function POST(req: Request) {
         activeWorkingModel = model;
         break;
       } catch (err: any) {
-        console.warn(`[Gemini] Model '${model}' failed, attempting fallback:`, err?.message || err);
-        lastError = err;
-        if (activeWorkingModel === model) {
-          activeWorkingModel = null;
+        console.warn(`[Gemini] Model '${model}' failed with systemInstruction, trying fallback prompt:`, err?.message || err);
+        try {
+          // Fallback to combined prompt for legacy compatibility if model rejects systemInstruction
+          const legacyPrompt = buildAssistantPrompt(
+            question,
+            [],
+            liveContexts,
+            Array.isArray(history) ? history : undefined
+          );
+          streamResult = await ai.models.generateContentStream({
+            model: model,
+            contents: legacyPrompt,
+            config: {
+              temperature: TEMPERATURE,
+              maxOutputTokens: MAX_OUTPUT_TOKENS,
+            },
+          });
+          successfulModel = model;
+          activeWorkingModel = model;
+          break;
+        } catch (innerErr: any) {
+          lastError = innerErr;
+          if (activeWorkingModel === model) {
+            activeWorkingModel = null;
+          }
         }
       }
     }

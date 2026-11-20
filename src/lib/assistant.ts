@@ -13,8 +13,8 @@ export const knowledgeChunks: KnowledgeChunk[] = [
   {
     id: "about",
     title: "About Danish (Identity & Specialization)",
-    text: "Danish (Danish Riaz Dani) is a Senior Full Stack Developer & UI Architect specializing in React, Next.js, TypeScript, Sitecore XM Cloud, Node.js, and modern web application development. He works at 7 Kings Code, engineering reusable component systems and enterprise web platforms.",
-    tags: ["fullstack", "full stack", "react", "next.js", "typescript", "sitecore", "7 kings code", "danish", "developer", "architect", "bio"],
+    text: "Danish (Danish Riaz Dani) is a Full Stack Developer specializing in React, Next.js, TypeScript, Sitecore XM Cloud, Node.js, and modern web application development. He works at 7 Kings Code, engineering reusable component systems and enterprise web platforms.",
+    tags: ["fullstack", "full stack", "react", "next.js", "typescript", "sitecore", "7 kings code", "danish", "developer", "bio"],
   },
   {
     id: "experience",
@@ -126,7 +126,7 @@ export async function getLiveContactContext(): Promise<string> {
     return getPortfolioProfileContext();
   } catch (error) {
     console.error("Failed to build profile context:", error);
-    return "Name: Danish Riaz Dani\nRole: Senior Full Stack Developer\nEmail: danish.daniriaz@gmail.com\nPhone: +92 302 4111148\nResume: /DanishResume.pdf";
+    return "Name: Danish Riaz Dani\nRole: Full Stack Developer\nEmail: danish.daniriaz@gmail.com\nPhone: +92 302 4111148\nResume: /DanishResume.pdf";
   }
 }
 
@@ -215,6 +215,100 @@ export function findRelevantChunks(question: string) {
     .map((item) => item.chunk);
 }
 
+export function buildAssistantSystemInstruction(liveContexts?: {
+  projects?: string;
+  skills?: string;
+  experience?: string;
+  contact?: string;
+}): string {
+  const projects =
+    liveContexts?.projects ||
+    "- CWS Hygiene at 7 Kings Code: Enterprise platform built with Sitecore XM Cloud & React.\n- CWS Workwear at CWS Global: Workwear composable e-commerce platform.";
+  const skills =
+    liveContexts?.skills ||
+    "- Frontend: React, Next.js, TypeScript, Tailwind CSS\n- Backend: Node.js, Sitecore XM Cloud, REST APIs, Firebase\n- Tooling: Git, GitHub, Figma, Vercel";
+  const experience =
+    liveContexts?.experience ||
+    "- Full Stack Developer at 7 Kings Code (Current Role): Engineering scalable web platforms with React, Node.js, and Sitecore XM Cloud.\n- Website Developer at Global Study Expertz: Built modern web apps with React.js, Next.js, and TypeScript.";
+  const contact =
+    liveContexts?.contact ||
+    "Email: danish.daniriaz@gmail.com | Phone/WhatsApp: +92 302 4111148 | Location: Pakistan | LinkedIn: https://www.linkedin.com/in/danishriazdani/ | GitHub: https://github.com/danishmeher | Resume: /DanishResume.pdf";
+
+  return `You are the conversational AI companion on Danish Riaz Dani's portfolio.
+You speak naturally, warmly, and realistically like a sharp, friendly colleague or peer who knows Danish well.
+
+CORE PERSONA & HUMAN REALISM:
+1. Speak Like a Real Human:
+   - Talk naturally, directly, and casually. Avoid corporate clichés, canned scripts, and robotic greetings.
+   - NEVER start with robotic boilerplate like "Welcome to Danish's portfolio! How can I help you today?" or "I am an automated assistant".
+   - Jump straight into the conversation like a real person in a chat window.
+
+2. Danish's Identity & Role:
+   - Danish is a "Full Stack Developer" (STRICT MANDATE: NEVER refer to him as "Senior Full Stack Developer").
+   - Current Role: Full Stack Developer at 7 Kings Code.
+   - Core Tech: React, Next.js, TypeScript, Node.js, Sitecore XM Cloud, and Tailwind CSS.
+   - Key Work: Enterprise platforms like CWS Hygiene and CWS Workwear.
+   - Personal Side: Outside of code, he's into cricket, competitive gaming, and outdoor sports.
+
+3. Language & Tone Matching:
+   - If the user writes in Roman Urdu / Urdu / Hindi (e.g. 'kya haal hai', 'danish kya karta hai', 'projects btao'), reply in natural, fluent, friendly Roman Urdu (e.g. 'Sab theek thaak bhai! Aap sunao...').
+   - If the user writes in English, reply in natural, engaging conversational English.
+   - Mirror the user's tone: casual if they are casual, professional if they are formal.
+
+4. Formatting & Natural Flow:
+   - Keep answers concise and human (typically 2 to 4 sentences).
+   - Do NOT overuse bold text or put asterisks around every technology name. Real people don't chat in excessive markdown.
+   - Only use clean bullet points when the visitor asks for a list (like projects or tech stack).
+   - Do NOT end every single message with a repetitive canned question (e.g., "Would you like his email?" or "Can I help with anything else?"). Let conversations flow naturally.
+
+DANISH'S VERIFIED BACKGROUND & CONTEXT:
+- Experience:
+${experience}
+
+- Key Projects:
+${projects}
+
+- Technical Skills:
+${skills}
+
+- Contact & Profiles:
+${contact}`;
+}
+
+export function formatConversationContents(
+  question: string,
+  history?: { role: string; text: string }[]
+): any[] | string {
+  if (!history || history.length === 0) {
+    return question;
+  }
+
+  // Filter out boilerplate initial greetings and empty messages
+  const filteredHistory = history.filter(
+    (h) =>
+      h.text &&
+      !h.text.toLowerCase().includes("how can i help you today") &&
+      !h.text.toLowerCase().includes("i'm danish's ai assistant")
+  );
+
+  if (filteredHistory.length === 0) {
+    return question;
+  }
+
+  const recentHistory = filteredHistory.slice(-6);
+  const contents: any[] = recentHistory.map((item) => ({
+    role: item.role === "assistant" ? "model" : "user",
+    parts: [{ text: item.text }],
+  }));
+
+  contents.push({
+    role: "user",
+    parts: [{ text: question }],
+  });
+
+  return contents;
+}
+
 export function buildAssistantPrompt(
   question: string,
   chunks: KnowledgeChunk[],
@@ -226,41 +320,15 @@ export function buildAssistantPrompt(
   },
   history?: { role: string; text: string }[]
 ) {
-  const retrievedText = chunks
-    .map((chunk) => {
-      if (chunk.id === "projects" && liveContexts?.projects) {
-        return `${chunk.title}:\n${liveContexts.projects}`;
-      }
-      if (chunk.id === "skills" && liveContexts?.skills) {
-        return `${chunk.title}:\n${liveContexts.skills}`;
-      }
-      if (chunk.id === "experience" && liveContexts?.experience) {
-        return `${chunk.title}:\n${liveContexts.experience}`;
-      }
-      if (chunk.id === "contact" && liveContexts?.contact) {
-        return `${chunk.title}:\n${liveContexts.contact}`;
-      }
-      return `${chunk.title}: ${chunk.text}`;
-    })
-    .join("\n\n");
+  const systemInstruction = buildAssistantSystemInstruction(liveContexts);
+  const historyText =
+    history && history.length > 0
+      ? `Recent Conversation Context:\n` +
+        history
+          .map((h) => `${h.role === "user" ? "Visitor" : "Assistant"}: ${h.text}`)
+          .join("\n") +
+        `\n\n`
+      : ``;
 
-  const historyText = history && history.length > 0
-    ? `Recent Conversation Context:\n` + history.map(h => `${h.role === 'user' ? 'Visitor' : 'Assistant'}: ${h.text}`).join('\n') + `\n\n`
-    : ``;
-
-  return `You are Danish's official AI Portfolio Assistant — a warm, friendly, concise, and knowledgeable guide representing Danish Riaz Dani (Senior Full Stack Developer & Sitecore XM Cloud Engineer).
-
-PERSONALITY & COMMUNICATION STYLE:
-- Tone: Warm, human, helpful, and direct.
-- CONCISENESS DIRECTIVE: Keep responses brief, crisp, and conversational. Deliver a clear, helpful response in 1 to 2 short sentences or a max of 2-3 concise bullet points (around 40 to 60 words max). Do NOT write long paragraphs.
-- Speak naturally like a real human software engineer representing Danish.
-- Use formatting (bullet points, bold text for key terms) to make answers scannable and delightful to read.
-- If asked about hiring or contact, warmly encourage reaching out via email or LinkedIn.
-
-KNOWLEDGE BASE ABOUT DANISH:
-${retrievedText}
-
-${historyText}Visitor Question: ${question}
-
-Response (concise, warm, human, max 60 words):`;
+  return `${systemInstruction}\n\n${historyText}Visitor Question: ${question}\n\nResponse (natural, human, realistic, concise):`;
 }
