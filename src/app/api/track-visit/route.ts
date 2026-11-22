@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { notifyVisitor, VisitorInfo } from "@/lib/notifier";
-import { addVisitorLog } from "@/lib/firestore";
+import { saveVisitorLog } from "@/lib/visitor-store";
 
 function parseUserAgent(ua: string) {
   let device = "Desktop";
@@ -71,8 +71,8 @@ export async function POST(req: Request) {
       screen: body.screen || "",
     };
 
-    // Save visitor log to Firestore for Admin Panel
-    addVisitorLog({
+    // Save visitor log reliably (local store + Firestore sync)
+    await saveVisitorLog({
       ip,
       country: country || "Unknown Country",
       city: city || "",
@@ -83,8 +83,6 @@ export async function POST(req: Request) {
       path: body.path || "/",
       screen: body.screen || "",
       createdAt: Date.now(),
-    }).catch((err) => {
-      console.error("[TrackVisit] Firestore save failed:", err?.message || err);
     });
 
     // Optional notification (if configured)

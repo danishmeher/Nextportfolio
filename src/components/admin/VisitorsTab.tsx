@@ -16,15 +16,7 @@ import {
   Search,
 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  getVisitorLogs,
-  getAiChatLogs,
-  deleteVisitorLog,
-  clearAllVisitorLogs,
-  deleteAiChatLog,
-  type VisitorLog,
-  type AiChatLog,
-} from "@/lib/firestore";
+import type { VisitorLog, AiChatLog } from "@/lib/firestore";
 
 export default function VisitorsTab() {
   const [visitors, setVisitors] = useState<VisitorLog[]>([]);
@@ -36,12 +28,16 @@ export default function VisitorsTab() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [visitorData, chatData] = await Promise.all([
-        getVisitorLogs(),
-        getAiChatLogs(),
+      const [vRes, cRes] = await Promise.all([
+        fetch("/api/admin/visitors")
+          .then((r) => r.json())
+          .catch(() => ({ visitors: [] })),
+        fetch("/api/admin/ai-chats")
+          .then((r) => r.json())
+          .catch(() => ({ chats: [] })),
       ]);
-      setVisitors(visitorData);
-      setChats(chatData);
+      setVisitors(vRes.visitors || []);
+      setChats(cRes.chats || []);
     } catch (err) {
       console.error("Failed to load logs:", err);
       toast.error("Failed to fetch analytics logs.");
@@ -57,7 +53,7 @@ export default function VisitorsTab() {
   const handleDeleteVisitor = async (id?: string) => {
     if (!id) return;
     try {
-      await deleteVisitorLog(id);
+      await fetch(`/api/admin/visitors?id=${encodeURIComponent(id)}`, { method: "DELETE" });
       setVisitors((prev) => prev.filter((v) => v.id !== id));
       toast.success("Visitor entry removed.");
     } catch {
@@ -68,7 +64,7 @@ export default function VisitorsTab() {
   const handleClearAll = async () => {
     if (!confirm("Are you sure you want to clear all visitor logs?")) return;
     try {
-      await clearAllVisitorLogs();
+      await fetch("/api/admin/visitors?clearAll=true", { method: "DELETE" });
       setVisitors([]);
       toast.success("All visitor logs cleared.");
     } catch {
@@ -79,7 +75,7 @@ export default function VisitorsTab() {
   const handleDeleteChat = async (id?: string) => {
     if (!id) return;
     try {
-      await deleteAiChatLog(id);
+      await fetch(`/api/admin/ai-chats?id=${encodeURIComponent(id)}`, { method: "DELETE" });
       setChats((prev) => prev.filter((c) => c.id !== id));
       toast.success("Chat log removed.");
     } catch {

@@ -8,7 +8,7 @@ import {
 } from "@/lib/assistant";
 import { portfolioProfile } from "@/lib/site-content";
 import { notifyAiChat } from "@/lib/notifier";
-import { addAiChatLog } from "@/lib/firestore";
+import { saveAiChat } from "@/lib/visitor-store";
 
 // Environment configurations (never hardcoded)
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY?.trim();
@@ -245,6 +245,12 @@ export async function POST(req: Request) {
     if (!streamResult) {
       console.warn("All Gemini models failed or exhausted. Falling back to local assistant:", lastError);
       const localAns = buildLocalAnswer(question, liveContexts.contact);
+      saveAiChat({
+        question,
+        answer: localAns,
+        device: "Web Visitor",
+        createdAt: Date.now(),
+      }).catch(() => {});
       notifyAiChat({ question, answer: localAns }).catch(() => {});
       return createTextStreamResponse(localAns, "local-fallback");
     }
@@ -261,8 +267,8 @@ export async function POST(req: Request) {
               controller.enqueue(encoder.encode(chunk.text));
             }
           }
-          // Save AI conversation log to Firestore for Admin Panel
-          addAiChatLog({
+          // Save AI conversation log reliably (local store + Firestore sync)
+          saveAiChat({
             question,
             answer: completeAnswer,
             device: "Web Visitor",
