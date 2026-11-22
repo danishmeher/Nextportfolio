@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { ThemeProvider } from "@/lib/theme-context";
+import VisitorTracker from "@/components/VisitorTracker";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         className="bg-slate-950 text-slate-100 antialiased selection:bg-indigo-500 selection:text-white transition-colors duration-300"
       >
         <ThemeProvider>
+          <VisitorTracker />
           {children}
           <Toaster richColors position="top-right" />
         </ThemeProvider>

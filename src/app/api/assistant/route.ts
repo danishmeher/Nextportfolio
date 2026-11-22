@@ -7,6 +7,8 @@ import {
   getAllLiveContexts,
 } from "@/lib/assistant";
 import { portfolioProfile } from "@/lib/site-content";
+import { notifyAiChat } from "@/lib/notifier";
+import { addAiChatLog } from "@/lib/firestore";
 
 // Environment configurations (never hardcoded)
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY?.trim();
@@ -242,19 +244,35 @@ export async function POST(req: Request) {
 
     if (!streamResult) {
       console.warn("All Gemini models failed or exhausted. Falling back to local assistant:", lastError);
-      return createTextStreamResponse(buildLocalAnswer(question, liveContexts.contact), "local-fallback");
+      const localAns = buildLocalAnswer(question, liveContexts.contact);
+      notifyAiChat({ question, answer: localAns }).catch(() => {});
+      return createTextStreamResponse(localAns, "local-fallback");
     }
 
     // Return real-time streaming response
     const encoder = new TextEncoder();
+    let completeAnswer = "";
     const stream = new ReadableStream({
       async start(controller) {
         try {
           for await (const chunk of streamResult) {
             if (chunk.text) {
+              completeAnswer += chunk.text;
               controller.enqueue(encoder.encode(chunk.text));
             }
           }
+          // Save AI conversation log to Firestore for Admin Panel
+          addAiChatLog({
+            question,
+            answer: completeAnswer,
+            device: "Web Visitor",
+            createdAt: Date.now(),
+          }).catch((err) => {
+            console.error("[Assistant] Failed to save chat log:", err?.message || err);
+          });
+
+          // Optional notification
+          notifyAiChat({ question, answer: completeAnswer }).catch(() => {});
         } catch (streamError) {
           console.error("Stream reading error:", streamError);
           controller.error(streamError);

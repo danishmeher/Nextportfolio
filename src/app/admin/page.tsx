@@ -20,7 +20,9 @@ import {
   Home,
   ChevronRight,
   Menu,
+  Users,
 } from "lucide-react";
+import VisitorsTab from "@/components/admin/VisitorsTab";
 import { useAuth } from "@/lib/auth-context";
 import {
   getProjects,
@@ -50,10 +52,11 @@ import {
   type ContactInfo,
 } from "@/lib/firestore";
 
-type Tab = "overview" | "projects" | "skills" | "experience" | "hero" | "contact";
+type Tab = "overview" | "visitors" | "projects" | "skills" | "experience" | "hero" | "contact";
 
 const tabs: { id: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
+  { id: "visitors", label: "Visitors & Traffic", icon: Users },
   { id: "hero", label: "Hero Section", icon: Home },
   { id: "projects", label: "Projects", icon: FolderKanban },
   { id: "skills", label: "Skills", icon: Code },
@@ -254,6 +257,7 @@ export default function AdminDashboard() {
                     experiences={experiences}
                   />
                 )}
+                {activeTab === "visitors" && <VisitorsTab />}
                 {activeTab === "hero" && (
                   <HeroTab heroInfo={heroInfo} onUpdate={loadData} />
                 )}

@@ -368,3 +368,79 @@ export async function initializeDefaultData() {
     responseNote: "I typically respond within 24 hours.",
   });
 }
+
+// Visitor & Traffic Logs
+export interface VisitorLog {
+  id?: string;
+  ip?: string;
+  country: string;
+  city?: string;
+  device: string;
+  os: string;
+  browser: string;
+  referrer: string;
+  path: string;
+  screen?: string;
+  createdAt: number;
+}
+
+export interface AiChatLog {
+  id?: string;
+  question: string;
+  answer?: string;
+  device?: string;
+  createdAt: number;
+}
+
+export async function addVisitorLog(data: Omit<VisitorLog, "id">): Promise<string> {
+  const docRef = await addDoc(collection(db, "visitors"), {
+    ...data,
+    createdAt: data.createdAt || Date.now(),
+  });
+  return docRef.id;
+}
+
+export async function getVisitorLogs(): Promise<VisitorLog[]> {
+  try {
+    const q = query(collection(db, "visitors"), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as VisitorLog));
+  } catch (err) {
+    console.warn("getVisitorLogs error:", err);
+    return [];
+  }
+}
+
+export async function deleteVisitorLog(id: string): Promise<void> {
+  await deleteDoc(doc(db, "visitors", id));
+}
+
+export async function clearAllVisitorLogs(): Promise<void> {
+  const q = query(collection(db, "visitors"));
+  const snapshot = await getDocs(q);
+  const deletePromises = snapshot.docs.map((d) => deleteDoc(d.ref));
+  await Promise.all(deletePromises);
+}
+
+export async function addAiChatLog(data: Omit<AiChatLog, "id">): Promise<string> {
+  const docRef = await addDoc(collection(db, "ai_chats"), {
+    ...data,
+    createdAt: data.createdAt || Date.now(),
+  });
+  return docRef.id;
+}
+
+export async function getAiChatLogs(): Promise<AiChatLog[]> {
+  try {
+    const q = query(collection(db, "ai_chats"), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as AiChatLog));
+  } catch (err) {
+    console.warn("getAiChatLogs error:", err);
+    return [];
+  }
+}
+
+export async function deleteAiChatLog(id: string): Promise<void> {
+  await deleteDoc(doc(db, "ai_chats", id));
+}
