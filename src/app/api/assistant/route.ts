@@ -15,8 +15,8 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY?.trim();
 const CONFIGURED_MODEL = process.env.GEMINI_MODEL?.trim();
 const CONFIGURED_FALLBACKS = process.env.GEMINI_FALLBACK_MODELS
   ? process.env.GEMINI_FALLBACK_MODELS.split(",")
-      .map((m) => m.trim())
-      .filter(Boolean)
+    .map((m) => m.trim())
+    .filter(Boolean)
   : [];
 const TEMPERATURE = parseFloat(process.env.GEMINI_TEMPERATURE || "0.75");
 const MAX_OUTPUT_TOKENS = parseInt(process.env.GEMINI_MAX_TOKENS || "350", 10);
@@ -124,9 +124,9 @@ function buildLocalAnswer(question: string, contactContext?: string) {
 
   if (/(resume|cv)/i.test(normalized)) {
     if (isUrdu) {
-      return `Danish ka latest resume aap top navigation bar me diye gaye "Resume" button se easily download kar sakte hain!`;
+      return `Danish ki detailed experience aur projects portfolio par listed hain. Resume ke liye aap directly email (danish.daniriaz@gmail.com) par request kar sakte hain!`;
     }
-    return `You can view and download Danish's latest CV directly via the "Resume" button in the top navigation bar!`;
+    return `Danish's complete work experience and projects are detailed right here on the portfolio. For an official resume copy, feel free to reach out via email!`;
   }
 
   if (/(project|portfolio|work|kaam)/i.test(normalized)) {
@@ -250,8 +250,8 @@ export async function POST(req: Request) {
         answer: localAns,
         device: "Web Visitor",
         createdAt: Date.now(),
-      }).catch(() => {});
-      notifyAiChat({ question, answer: localAns }).catch(() => {});
+      }).catch(() => { });
+      notifyAiChat({ question, answer: localAns }).catch(() => { });
       return createTextStreamResponse(localAns, "local-fallback");
     }
 
@@ -278,7 +278,7 @@ export async function POST(req: Request) {
           });
 
           // Optional notification
-          notifyAiChat({ question, answer: completeAnswer }).catch(() => {});
+          notifyAiChat({ question, answer: completeAnswer }).catch(() => { });
         } catch (streamError) {
           console.error("Stream reading error:", streamError);
           controller.error(streamError);

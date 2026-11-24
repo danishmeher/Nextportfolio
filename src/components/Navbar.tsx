@@ -29,8 +29,8 @@ export default function Navbar() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-          ? "bg-[var(--bg-nav)] shadow-lg border-b border-[var(--border-color)] py-3"
-          : "bg-transparent py-5"
+        ? "bg-[var(--bg-nav)] shadow-lg border-b border-[var(--border-color)] py-3"
+        : "bg-transparent py-5"
         }`}
     >
       <div className="mx-auto max-w-6xl px-6 flex items-center justify-between gap-4">
@@ -99,15 +99,6 @@ export default function Navbar() {
             </span>
           </Link>
 
-          <a
-            href="/Danish CV.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden md:inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 px-5 py-2 text-xs font-bold text-white shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:scale-105 transition-all duration-300"
-          >
-            Resume
-          </a>
-
           {/* Mobile menu toggle */}
           <button
             aria-label="Toggle menu"
@@ -149,15 +140,6 @@ export default function Navbar() {
                 >
                   Admin
                 </Link>
-                <a
-                  href="/DanishResume.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setMobileOpen(false)}
-                  className="inline-flex items-center justify-center w-full rounded-full bg-gradient-to-r from-indigo-600 to-cyan-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg"
-                >
-                  Download Resume
-                </a>
               </li>
             </ul>
           </motion.div>
