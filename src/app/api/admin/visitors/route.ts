@@ -3,7 +3,7 @@ import { getAllVisitors, removeVisitor, removeAllVisitors } from "@/lib/visitor-
 
 export async function GET() {
   try {
-    const visitors = getAllVisitors();
+    const visitors = await getAllVisitors();
     return NextResponse.json({ success: true, visitors });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err?.message || "Failed" }, { status: 500 });
@@ -17,12 +17,12 @@ export async function DELETE(req: Request) {
     const clearAll = searchParams.get("clearAll") === "true";
 
     if (clearAll) {
-      removeAllVisitors();
+      await removeAllVisitors();
       return NextResponse.json({ success: true, message: "Cleared all visitors" });
     }
 
     if (id) {
-      removeVisitor(id);
+      await removeVisitor(id);
       return NextResponse.json({ success: true, message: "Deleted visitor" });
     }
 

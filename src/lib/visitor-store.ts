@@ -1,6 +1,16 @@
 import fs from "fs";
 import path from "path";
-import { VisitorLog, AiChatLog, addVisitorLog, addAiChatLog } from "./firestore";
+import {
+  VisitorLog,
+  AiChatLog,
+  addVisitorLog,
+  addAiChatLog,
+  getVisitorLogs,
+  getAiChatLogs,
+  deleteVisitorLog,
+  clearAllVisitorLogs,
+  deleteAiChatLog,
+} from "./firestore";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const VISITORS_FILE = path.join(DATA_DIR, "visitors.json");
@@ -60,19 +70,45 @@ export async function saveVisitorLog(visitor: Omit<VisitorLog, "id">): Promise<V
   return newEntry;
 }
 
-export function getAllVisitors(): VisitorLog[] {
-  return readJsonFile<VisitorLog>(VISITORS_FILE);
+export async function getAllVisitors(): Promise<VisitorLog[]> {
+  const localVisitors = readJsonFile<VisitorLog>(VISITORS_FILE);
+  try {
+    const firestoreVisitors = await getVisitorLogs();
+    if (firestoreVisitors && firestoreVisitors.length > 0) {
+      const map = new Map<string, VisitorLog>();
+      for (const v of firestoreVisitors) {
+        const key = v.id || `${v.createdAt}_${v.ip}`;
+        map.set(key, v);
+      }
+      for (const v of localVisitors) {
+        const key = v.id || `${v.createdAt}_${v.ip}`;
+        if (!map.has(key)) {
+          map.set(key, v);
+        }
+      }
+      return Array.from(map.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    }
+  } catch (err) {
+    console.error("[VisitorStore] Error fetching from Firestore:", err);
+  }
+  return localVisitors;
 }
 
-export function removeVisitor(id: string): boolean {
+export async function removeVisitor(id: string): Promise<boolean> {
   const allVisitors = readJsonFile<VisitorLog>(VISITORS_FILE);
   const filtered = allVisitors.filter((v) => v.id !== id);
   writeJsonFile(VISITORS_FILE, filtered);
+  try {
+    await deleteVisitorLog(id);
+  } catch {}
   return true;
 }
 
-export function removeAllVisitors(): boolean {
+export async function removeAllVisitors(): Promise<boolean> {
   writeJsonFile(VISITORS_FILE, []);
+  try {
+    await clearAllVisitorLogs();
+  } catch {}
   return true;
 }
 
@@ -97,13 +133,36 @@ export async function saveAiChat(chat: Omit<AiChatLog, "id">): Promise<AiChatLog
   return newEntry;
 }
 
-export function getAllAiChats(): AiChatLog[] {
-  return readJsonFile<AiChatLog>(CHATS_FILE);
+export async function getAllAiChats(): Promise<AiChatLog[]> {
+  const localChats = readJsonFile<AiChatLog>(CHATS_FILE);
+  try {
+    const firestoreChats = await getAiChatLogs();
+    if (firestoreChats && firestoreChats.length > 0) {
+      const map = new Map<string, AiChatLog>();
+      for (const c of firestoreChats) {
+        const key = c.id || `${c.createdAt}_${c.question}`;
+        map.set(key, c);
+      }
+      for (const c of localChats) {
+        const key = c.id || `${c.createdAt}_${c.question}`;
+        if (!map.has(key)) {
+          map.set(key, c);
+        }
+      }
+      return Array.from(map.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    }
+  } catch (err) {
+    console.error("[VisitorStore] Error fetching AI chats from Firestore:", err);
+  }
+  return localChats;
 }
 
-export function removeAiChat(id: string): boolean {
+export async function removeAiChat(id: string): Promise<boolean> {
   const allChats = readJsonFile<AiChatLog>(CHATS_FILE);
   const filtered = allChats.filter((c) => c.id !== id);
   writeJsonFile(CHATS_FILE, filtered);
+  try {
+    await deleteAiChatLog(id);
+  } catch {}
   return true;
 }

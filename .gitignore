@@ -2,3 +2,5 @@ node_modules
 .next
 .env
 data/
+*.tsbuildinfo
+tsconfig.tsbuildinfo

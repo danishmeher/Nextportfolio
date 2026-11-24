@@ -3,7 +3,7 @@ import { getAllAiChats, removeAiChat } from "@/lib/visitor-store";
 
 export async function GET() {
   try {
-    const chats = getAllAiChats();
+    const chats = await getAllAiChats();
     return NextResponse.json({ success: true, chats });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err?.message || "Failed" }, { status: 500 });
@@ -16,7 +16,7 @@ export async function DELETE(req: Request) {
     const id = searchParams.get("id");
 
     if (id) {
-      removeAiChat(id);
+      await removeAiChat(id);
       return NextResponse.json({ success: true, message: "Deleted chat log" });
     }
 

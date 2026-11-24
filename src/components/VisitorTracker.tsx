@@ -13,10 +13,12 @@ export default function VisitorTracker() {
         return;
       }
 
-      // Ensure we only track once per browser session to prevent spam on every refresh
-      const sessionKey = "portfolio_visit_tracked";
-      if (!sessionStorage.getItem(sessionKey)) {
-        sessionStorage.setItem(sessionKey, "1");
+      // Track once per 10 minutes per browser session to avoid duplicate spam on quick refreshes
+      const lastTracked = Number(sessionStorage.getItem("portfolio_last_visit_time") || "0");
+      const now = Date.now();
+
+      if (now - lastTracked > 10 * 60 * 1000) {
+        sessionStorage.setItem("portfolio_last_visit_time", String(now));
 
         const payload = {
           referrer: document.referrer || "Direct",
